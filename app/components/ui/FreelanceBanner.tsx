@@ -2,8 +2,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export const FreelanceBanner: React.FC = () => {
+  const { getThemeColor } = useTheme();
+  const themeColor = getThemeColor();
   return (
     <div className="flex items-center justify-center mb-12">
       <motion.div
@@ -11,20 +14,33 @@ export const FreelanceBanner: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         whileHover={{ scale: 1.05, y: -2 }}
-        className="flex items-center gap-2 bg-gray-900 rounded-lg px-4 py-2.5 border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer"
+        className="flex items-center gap-2.5 rounded-full px-3.5 py-2 border transition-colors cursor-pointer"
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderColor: '#71717B'
+        }}
       >
-        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-        <span className="text-white text-sm font-medium">Available for Freelance</span>
+        {/* Orange Dot with outline */}
+        <div className="relative flex items-center justify-center w-3 h-3">
+          <div className="absolute w-3 h-3 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
+          <div className="relative w-2.5 h-2.5 rounded-full" style={{ backgroundColor: themeColor }}></div>
+        </div>
+        
+        {/* Text */}
+        <span className="text-sm font-mono tracking-wide" style={{ color: '#D4D4D8' }}>Available for Freelance</span>
+        
+        {/* Chevron Icon */}
         <svg
-          className="w-4 h-4 text-white"
+          className="w-3.5 h-3.5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          style={{ color: '#71717B' }}
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
+            strokeWidth={2.5}
             d="M9 5l7 7-7 7"
           />
         </svg>

@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useTheme, ThemeColor } from '../../contexts/ThemeContext';
+import { Logo } from '../ui/Logo';
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -10,6 +11,9 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) => {
+  const { themeColor, setThemeColor, getThemeColor } = useTheme();
+  const themeColorValue = getThemeColor();
+
   const navLinks = [
     'Home',
     'About',
@@ -19,12 +23,13 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
     'Contact',
   ];
 
-  const colorPalette = [
-    { color: 'bg-orange-500', name: 'orange' },
-    { color: 'bg-green-500', name: 'green' },
-    { color: 'bg-blue-500', name: 'blue' },
-    { color: 'bg-red-500', name: 'red' },
-    { color: 'bg-purple-500', name: 'purple' },
+  const colorPalette: { color: ThemeColor; bgClass: string; name: string }[] = [
+    { color: 'grey', bgClass: 'bg-gray-500', name: 'grey' },
+    { color: 'orange', bgClass: 'bg-orange-500', name: 'orange' },
+    { color: 'green', bgClass: 'bg-green-500', name: 'green' },
+    { color: 'blue', bgClass: 'bg-blue-500', name: 'blue' },
+    { color: 'red', bgClass: 'bg-red-500', name: 'red' },
+    { color: 'purple', bgClass: 'bg-purple-500', name: 'purple' },
   ];
 
   return (
@@ -41,16 +46,10 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
         transition={{ duration: 0.4, delay: 0.2 }}
         className="flex items-center gap-2"
       >
-        <Image
-          src="/assets/logo.svg"
-          alt="Logo"
-          width={40}
-          height={40}
-          priority
-        />
+        <Logo />
         <span className="font-semibold text-lg">
           <span className="text-white">MrA</span>
-          <span className="text-orange-500">-png</span>
+          <span style={{ color: themeColorValue }}>-png</span>
         </span>
       </motion.div>
 
@@ -60,7 +59,12 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
           <motion.a
             key={link}
             href={`#${link.toLowerCase().replace(' ', '-')}`}
-            className="text-white hover:text-orange-500 transition-colors text-sm"
+            className="transition-colors text-sm"
+            style={{ 
+              color: 'white',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = themeColorValue)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
@@ -78,8 +82,11 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
           {colorPalette.map((item) => (
             <div
               key={item.name}
-              className={`w-3 h-3 rounded-full ${item.color} cursor-pointer hover:scale-110 transition-transform`}
+              className={`w-3 h-3 rounded-full ${item.bgClass} cursor-pointer hover:scale-110 transition-transform ${
+                themeColor === item.color ? 'ring-2 ring-white ring-offset-2 ring-offset-black' : ''
+              }`}
               title={item.name}
+              onClick={() => setThemeColor(item.color)}
             />
           ))}
         </div>
@@ -87,7 +94,10 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
         {/* Dark Mode Toggle */}
         <button
           onClick={onToggleDarkMode}
-          className="text-white hover:text-orange-500 transition-colors p-2"
+          className="text-white transition-colors p-2"
+          style={{ color: 'white' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = themeColorValue}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
           aria-label="Toggle dark mode"
         >
           <svg

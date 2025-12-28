@@ -68,7 +68,8 @@ export const TechStack: React.FC<TechStackProps> = ({
             transition={{ duration: 0.4, delay: index * 0.1 }}
             whileHover={{ scale: 1.1, y: -5 }}
             whileTap={{ scale: 0.95 }}
-            className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg text-gray-300 border border-gray-800 hover:border-gray-700 hover:text-white transition-all duration-200 text-sm md:text-base font-medium min-w-fit"
+            className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg text-gray-300 border hover:text-white transition-all duration-200 text-sm md:text-base font-medium min-w-fit"
+            style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
           >
             {tech}
           </motion.button>
