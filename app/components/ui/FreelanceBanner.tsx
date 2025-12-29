@@ -5,8 +5,14 @@ import { motion } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 
 export const FreelanceBanner: React.FC = () => {
-  const { getThemeColor } = useTheme();
+  const { getThemeColor, isDarkMode } = useTheme();
   const themeColor = getThemeColor();
+  
+  const bgColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  const borderColor = isDarkMode ? '#71717B' : '#9CA3AF';
+  const textColor = isDarkMode ? '#D4D4D8' : '#4B5563';
+  const iconColor = isDarkMode ? '#71717B' : '#9CA3AF';
+  
   return (
     <div className="flex items-center justify-center mb-12">
       <motion.div
@@ -16,18 +22,18 @@ export const FreelanceBanner: React.FC = () => {
         whileHover={{ scale: 1.05, y: -2 }}
         className="flex items-center gap-2.5 rounded-full px-3.5 py-2 border transition-colors cursor-pointer"
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-          borderColor: '#71717B'
+          backgroundColor: bgColor,
+          borderColor: borderColor
         }}
       >
         {/* Orange Dot with outline */}
         <div className="relative flex items-center justify-center w-3 h-3">
-          <div className="absolute w-3 h-3 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
+          <div className="absolute w-3 h-3 rounded-full" style={{ backgroundColor: bgColor }}></div>
           <div className="relative w-2.5 h-2.5 rounded-full" style={{ backgroundColor: themeColor }}></div>
         </div>
         
         {/* Text */}
-        <span className="text-sm font-mono tracking-wide" style={{ color: '#D4D4D8' }}>Available for Freelance</span>
+        <span className="text-sm font-mono tracking-wide" style={{ color: textColor }}>Available for Freelance</span>
         
         {/* Chevron Icon */}
         <svg
@@ -35,7 +41,7 @@ export const FreelanceBanner: React.FC = () => {
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          style={{ color: '#71717B' }}
+          style={{ color: iconColor }}
         >
           <path
             strokeLinecap="round"

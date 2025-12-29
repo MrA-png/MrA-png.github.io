@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../../contexts/ThemeContext';
 import { DecorativeSVG } from '../ui/DecorativeSVG';
 
 interface TechStackProps {
@@ -22,6 +23,12 @@ const defaultTechnologies = [
 export const TechStack: React.FC<TechStackProps> = ({ 
   technologies = defaultTechnologies 
 }) => {
+  const { isDarkMode } = useTheme();
+  const textColor = isDarkMode ? '#D1D5DB' : '#4B5563';
+  const textHoverColor = isDarkMode ? '#FFFFFF' : '#000000';
+  const borderColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  const titleColor = isDarkMode ? '#9CA3AF' : '#6B7280';
+  
   return (
     <div className="relative flex flex-col items-center mt-16 md:mt-20 w-full">
       {/* Decorative SVG - Left */}
@@ -52,7 +59,8 @@ export const TechStack: React.FC<TechStackProps> = ({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="text-gray-400 text-xs md:text-sm font-medium mb-6 tracking-wider uppercase text-center relative z-10 px-4"
+        className="text-xs md:text-sm font-medium mb-6 tracking-wider uppercase text-center relative z-10 px-4"
+        style={{ color: titleColor }}
       >
         POWERING NEXT-GEN SOLUTIONS
       </motion.h2>
@@ -68,8 +76,13 @@ export const TechStack: React.FC<TechStackProps> = ({
             transition={{ duration: 0.4, delay: index * 0.1 }}
             whileHover={{ scale: 1.1, y: -5 }}
             whileTap={{ scale: 0.95 }}
-            className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg text-gray-300 border hover:text-white transition-all duration-200 text-sm md:text-base font-medium min-w-fit"
-            style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
+            className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg border transition-all duration-200 text-sm md:text-base font-medium min-w-fit"
+            style={{ 
+              borderColor: borderColor,
+              color: textColor
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = textHoverColor)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = textColor)}
           >
             {tech}
           </motion.button>

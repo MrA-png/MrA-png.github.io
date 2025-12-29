@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../../contexts/ThemeContext';
 import { Button } from '../ui/Button';
 import { FreelanceBanner } from '../ui/FreelanceBanner';
 import { TechStack } from './TechStack';
@@ -30,6 +31,10 @@ const itemVariants = {
 };
 
 export const HeroSection: React.FC = () => {
+  const { isDarkMode } = useTheme();
+  const textColor = isDarkMode ? '#FFFFFF' : '#000000';
+  const textSecondaryColor = isDarkMode ? '#9CA3AF' : '#4B5563';
+  
   return (
     <section className="relative flex flex-col items-center justify-center min-h-screen px-6 py-20 max-w-7xl mx-auto pt-24">
       {/* Main Content */}
@@ -46,7 +51,8 @@ export const HeroSection: React.FC = () => {
       {/* Headline */}
       <motion.h1
         variants={itemVariants}
-        className="text-5xl md:text-7xl lg:text-8xl font-bold text-white text-center mb-6 leading-tight px-4"
+        className="text-5xl md:text-7xl lg:text-8xl font-bold text-center mb-6 leading-tight px-4"
+        style={{ color: textColor }}
       >
         <motion.span
           className="glow-text block"
@@ -69,7 +75,8 @@ export const HeroSection: React.FC = () => {
       {/* Supporting Paragraph */}
       <motion.p
         variants={itemVariants}
-        className="text-gray-400 text-center max-w-2xl mb-10 text-base md:text-lg lg:text-xl leading-relaxed px-4"
+        className="text-center max-w-2xl mb-10 text-base md:text-lg lg:text-xl leading-relaxed px-4"
+        style={{ color: textSecondaryColor }}
       >
         Explore my personal portfolio showcasing real-world experience, selected projects, and thoughtfully crafted web and mobile applications.
       </motion.p>
