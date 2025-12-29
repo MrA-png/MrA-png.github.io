@@ -5,14 +5,13 @@ import { motion } from 'framer-motion';
 import { useTheme, ThemeColor } from '../../contexts/ThemeContext';
 import { Logo } from '../ui/Logo';
 
-interface HeaderProps {
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
-}
-
-export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) => {
-  const { themeColor, setThemeColor, getThemeColor } = useTheme();
+export const Header: React.FC = () => {
+  const { themeColor, setThemeColor, getThemeColor, isDarkMode, toggleDarkMode } = useTheme();
   const themeColorValue = getThemeColor();
+  
+  const textColor = isDarkMode ? '#FFFFFF' : '#000000';
+  const bgColor = isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)';
+  const navHoverColor = isDarkMode ? themeColorValue : themeColorValue;
 
   const navLinks = [
     'Home',
@@ -37,7 +36,8 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="fixed top-0 left-0 right-0 w-full px-6 md:px-12 py-4 flex items-center justify-between max-w-7xl mx-auto z-50 bg-black/80 backdrop-blur-sm"
+      className="fixed top-0 left-0 right-0 w-full px-6 md:px-12 py-4 flex items-center justify-between max-w-7xl mx-auto z-50 backdrop-blur-sm transition-colors duration-300"
+      style={{ backgroundColor: bgColor }}
     >
       {/* Logo */}
       <motion.div
@@ -48,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
       >
         <Logo />
         <span className="font-semibold text-lg">
-          <span className="text-white">MrA</span>
+          <span style={{ color: textColor }}>MrA</span>
           <span style={{ color: themeColorValue }}>-png</span>
         </span>
       </motion.div>
@@ -61,10 +61,10 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
             href={`#${link.toLowerCase().replace(' ', '-')}`}
             className="transition-colors text-sm"
             style={{ 
-              color: 'white',
+              color: textColor,
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = themeColorValue)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
+            onMouseEnter={(e) => (e.currentTarget.style.color = navHoverColor)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = textColor)}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
@@ -83,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
             <div
               key={item.name}
               className={`w-3 h-3 rounded-full ${item.bgClass} cursor-pointer hover:scale-110 transition-transform ${
-                themeColor === item.color ? 'ring-2 ring-white ring-offset-2 ring-offset-black' : ''
+                themeColor === item.color ? `ring-2 ${isDarkMode ? 'ring-white ring-offset-black' : 'ring-black ring-offset-white'} ring-offset-2` : ''
               }`}
               title={item.name}
               onClick={() => setThemeColor(item.color)}
@@ -93,11 +93,11 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, onToggleDarkMode }) 
 
         {/* Dark Mode Toggle */}
         <button
-          onClick={onToggleDarkMode}
-          className="text-white transition-colors p-2"
-          style={{ color: 'white' }}
-          onMouseEnter={(e) => e.currentTarget.style.color = themeColorValue}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
+          onClick={toggleDarkMode}
+          className="transition-colors p-2"
+          style={{ color: textColor }}
+          onMouseEnter={(e) => e.currentTarget.style.color = navHoverColor}
+          onMouseLeave={(e) => e.currentTarget.style.color = textColor}
           aria-label="Toggle dark mode"
         >
           <svg

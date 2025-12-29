@@ -8,6 +8,8 @@ interface ThemeContextType {
   themeColor: ThemeColor;
   setThemeColor: (color: ThemeColor) => void;
   getThemeColor: () => string;
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -23,13 +25,18 @@ const themeColors: Record<ThemeColor, string> = {
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [themeColor, setThemeColor] = useState<ThemeColor>('grey');
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
   const getThemeColor = () => {
     return themeColors[themeColor];
   };
 
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
   return (
-    <ThemeContext.Provider value={{ themeColor, setThemeColor, getThemeColor }}>
+    <ThemeContext.Provider value={{ themeColor, setThemeColor, getThemeColor, isDarkMode, toggleDarkMode }}>
       {children}
     </ThemeContext.Provider>
   );

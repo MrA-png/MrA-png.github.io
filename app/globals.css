@@ -24,3 +24,8 @@ body {
                0 0 40px rgba(255, 255, 255, 0.3),
                0 0 60px rgba(255, 255, 255, 0.2);
 }
+
+/* Contribution graph grid */
+.grid-cols-53 {
+  grid-template-columns: repeat(53, minmax(0, 1fr));
+}
