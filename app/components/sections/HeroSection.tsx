@@ -25,15 +25,39 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
     },
   },
 };
 
 export const HeroSection: React.FC = () => {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, getThemeColor, themeColor } = useTheme();
+  const themeColorValue = getThemeColor();
   const textColor = isDarkMode ? '#FFFFFF' : '#000000';
   const textSecondaryColor = isDarkMode ? '#9CA3AF' : '#4B5563';
+  
+  // Helper function to convert hex to rgba
+  const hexToRgba = (hex: string, alpha: number): string => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  
+  // Glow color: use theme color if not grey, otherwise use default white
+  const glowColor = themeColor === 'grey' 
+    ? { r: 255, g: 255, b: 255 } // Default white glow
+    : {
+        r: parseInt(themeColorValue.slice(1, 3), 16),
+        g: parseInt(themeColorValue.slice(3, 5), 16),
+        b: parseInt(themeColorValue.slice(5, 7), 16)
+      };
+  
+  const glowStyle = {
+    textShadow: `0 0 20px rgba(${glowColor.r}, ${glowColor.g}, ${glowColor.b}, 0.5),
+                 0 0 40px rgba(${glowColor.r}, ${glowColor.g}, ${glowColor.b}, 0.3),
+                 0 0 60px rgba(${glowColor.r}, ${glowColor.g}, ${glowColor.b}, 0.2)`
+  };
   
   return (
     <section className="relative flex flex-col items-center justify-center min-h-screen px-6 py-20 max-w-7xl mx-auto pt-24">
@@ -55,7 +79,8 @@ export const HeroSection: React.FC = () => {
         style={{ color: textColor }}
       >
         <motion.span
-          className="glow-text block"
+          className="block"
+          style={glowStyle}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
@@ -63,7 +88,8 @@ export const HeroSection: React.FC = () => {
           Revolutionize Your
         </motion.span>
         <motion.span
-          className="glow-text block"
+          className="block"
+          style={glowStyle}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.7 }}

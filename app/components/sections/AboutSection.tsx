@@ -21,18 +21,28 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
   const { getThemeColor, isDarkMode } = useTheme();
   const themeColor = getThemeColor();
   
+  // Helper function to convert hex to rgba
+  const hexToRgba = (hex: string, alpha: number): string => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  
   // Colors based on theme mode
   const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-black';
   const textGrayColor = isDarkMode ? 'text-gray-400' : 'text-gray-600';
   const textGrayLightColor = isDarkMode ? 'text-gray-300' : 'text-gray-700';
-  const borderColor = isDarkMode ? '#575757' : '#D1D5DB';
   const placeholderColor = isDarkMode ? '#575757' : '#9CA3AF';
   
-  // Gradient colors based on mode
+  // Border color using theme color with opacity
+  const borderColor = hexToRgba(themeColor, 0.5);
+  
+  // Gradient colors based on mode with theme color
   const gradientBg = isDarkMode 
-    ? 'linear-gradient(to bottom, rgba(20, 20, 20, 0.4) 0%, rgba(26, 26, 26, 0.4) 39%, rgba(54, 54, 54, 0.4) 100%)'
-    : 'linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(249, 250, 251, 0.4) 39%, rgba(243, 244, 246, 0.4) 100%)';
+    ? `linear-gradient(to bottom, rgba(20, 20, 20, 0.4) 0%, ${hexToRgba(themeColor, 0.15)} 39%, ${hexToRgba(themeColor, 0.25)} 100%)`
+    : `linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, ${hexToRgba(themeColor, 0.1)} 39%, ${hexToRgba(themeColor, 0.15)} 100%)`;
 
   // Profile data
   const profileData = {
