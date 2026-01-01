@@ -23,10 +23,18 @@ const defaultTechnologies = [
 export const TechStack: React.FC<TechStackProps> = ({ 
   technologies = defaultTechnologies 
 }) => {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, getThemeColor } = useTheme();
+  const themeColor = getThemeColor();
   const textColor = isDarkMode ? '#D1D5DB' : '#4B5563';
-  const textHoverColor = isDarkMode ? '#FFFFFF' : '#000000';
-  const borderColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  const textHoverColor = themeColor;
+  // Helper function to convert hex to rgba
+  const hexToRgba = (hex: string, alpha: number): string => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  const borderColor = hexToRgba(themeColor, 0.3);
   const titleColor = isDarkMode ? '#9CA3AF' : '#6B7280';
   
   return (
@@ -62,7 +70,7 @@ export const TechStack: React.FC<TechStackProps> = ({
         className="text-xs md:text-sm font-medium mb-6 tracking-wider uppercase text-center relative z-10 px-4"
         style={{ color: titleColor }}
       >
-        POWERING NEXT-GEN SOLUTIONS
+        TECHNOLOGIES I WORK WITH
       </motion.h2>
 
       {/* Technology Buttons */}
@@ -81,8 +89,14 @@ export const TechStack: React.FC<TechStackProps> = ({
               borderColor: borderColor,
               color: textColor
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = textHoverColor)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = textColor)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = textHoverColor;
+              e.currentTarget.style.borderColor = themeColor;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = textColor;
+              e.currentTarget.style.borderColor = borderColor;
+            }}
           >
             {tech}
           </motion.button>
