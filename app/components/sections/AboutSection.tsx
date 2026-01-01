@@ -18,8 +18,21 @@ interface AboutSectionProps {
 }
 
 export const AboutSection: React.FC<AboutSectionProps> = () => {
-  const { getThemeColor } = useTheme();
+  const { getThemeColor, isDarkMode } = useTheme();
   const themeColor = getThemeColor();
+  
+  // Colors based on theme mode
+  const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
+  const textColor = isDarkMode ? 'text-white' : 'text-black';
+  const textGrayColor = isDarkMode ? 'text-gray-400' : 'text-gray-600';
+  const textGrayLightColor = isDarkMode ? 'text-gray-300' : 'text-gray-700';
+  const borderColor = isDarkMode ? '#575757' : '#D1D5DB';
+  const placeholderColor = isDarkMode ? '#575757' : '#9CA3AF';
+  
+  // Gradient colors based on mode
+  const gradientBg = isDarkMode 
+    ? 'linear-gradient(to bottom, rgba(20, 20, 20, 0.4) 0%, rgba(26, 26, 26, 0.4) 39%, rgba(54, 54, 54, 0.4) 100%)'
+    : 'linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(249, 250, 251, 0.4) 39%, rgba(243, 244, 246, 0.4) 100%)';
 
   // Profile data
   const profileData = {
@@ -104,10 +117,10 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
   };
 
   return (
-    <section className="min-h-screen bg-black text-white py-20">
+    <section className={`min-h-screen ${bgColor} ${textColor} py-20`}>
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* About Me Title */}
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-10">About Me</h2>
+        <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${textColor} mb-10`}>About Me</h2>
         
         {/* Top Section - Profile and Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
@@ -119,13 +132,13 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
             transition={{ duration: 0.5 }}
             className="rounded-lg p-6 border"
             style={{ 
-              background: 'linear-gradient(to bottom, rgba(20, 20, 20, 0.4) 0%, rgba(26, 26, 26, 0.4) 39%, rgba(54, 54, 54, 0.4) 100%)',
-              borderColor: '#575757'
+              background: gradientBg,
+              borderColor: borderColor
             }}
           >
             <div className="flex flex-col lg:flex-row gap-6 h-full">
               {/* Profile Picture Placeholder - Larger size, mengisi tinggi container */}
-              <div className="w-40 h-40 lg:w-48 lg:h-full rounded-lg flex-shrink-0" style={{ backgroundColor: '#575757' }}></div>
+              <div className="w-40 h-40 lg:w-48 lg:h-full rounded-lg flex-shrink-0" style={{ backgroundColor: placeholderColor }}></div>
               
               {/* Profile Text */}
               <div className="flex flex-col flex-1">
@@ -134,7 +147,7 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5 }}
-                  className="text-gray-400 text-sm mb-2"
+                  className={`${textGrayColor} text-sm mb-2`}
                 >
                   {profileData.title}
                 </motion.p>
@@ -144,7 +157,7 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.1 }}
-                  className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
+                  className={`text-3xl md:text-4xl lg:text-5xl font-bold ${textColor} mb-4`}
                 >
                   {profileData.name}
                 </motion.h2>
@@ -154,7 +167,7 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.2 }}
-                  className="text-gray-300 text-base mb-6"
+                  className={`${textGrayLightColor} text-base mb-6`}
                 >
                   {profileData.bio}
                 </motion.p>
@@ -191,13 +204,13 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
               transition={{ duration: 0.5 }}
               className="rounded-lg p-4 border mb-2"
               style={{ 
-                background: 'linear-gradient(to bottom, rgba(20, 20, 20, 0.4) 0%, rgba(26, 26, 26, 0.4) 39%, rgba(54, 54, 54, 0.4) 100%)',
-                borderColor: '#575757'
+                background: gradientBg,
+                borderColor: borderColor
               }}
             >
-              <p className="text-gray-400 text-sm">
+              <p className={`${textGrayColor} text-sm`}>
                 ENGINEERING{' '}
-                <span className="text-white font-semibold">WEB & MOBILE APPLICATIONS</span>{' '}
+                <span className={`${textColor} font-semibold`}>WEB & MOBILE APPLICATIONS</span>{' '}
                 WITH 3+ YEARS
               </p>
             </motion.div>
@@ -212,18 +225,18 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="rounded-lg p-6 border transition-colors cursor-pointer"
                 style={{ 
-                  background: 'linear-gradient(to bottom, rgba(20, 20, 20, 0.4) 0%, rgba(26, 26, 26, 0.4) 39%, rgba(54, 54, 54, 0.4) 100%)',
-                  borderColor: '#575757'
+                  background: gradientBg,
+                  borderColor: borderColor
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.borderColor = '#575757'}
-                onMouseLeave={(e) => e.currentTarget.style.borderColor = '#575757'}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = borderColor}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = borderColor}
               >
                 {/* Rectangle above INSIGHTS - disesuaikan dengan konten */}
-                <div className="w-full h-24 lg:h-28 rounded-lg mb-3" style={{ backgroundColor: '#575757' }}></div>
-                <p className="text-gray-400 text-xs mb-2">INSIGHTS</p>
+                <div className="w-full h-24 lg:h-28 rounded-lg mb-3" style={{ backgroundColor: placeholderColor }}></div>
+                <p className={`${textGrayColor} text-xs mb-2`}>INSIGHTS</p>
                 <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-white">Articles</h3>
-                  <div className="w-10 h-10 rounded-full" style={{ backgroundColor: '#575757' }}></div>
+                  <h3 className={`text-2xl font-bold ${textColor}`}>Articles</h3>
+                  <div className="w-10 h-10 rounded-full" style={{ backgroundColor: placeholderColor }}></div>
                 </div>
               </motion.div>
 
@@ -235,18 +248,18 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="rounded-lg p-6 border transition-colors cursor-pointer"
                 style={{ 
-                  background: 'linear-gradient(to bottom, rgba(20, 20, 20, 0.4) 0%, rgba(26, 26, 26, 0.4) 39%, rgba(54, 54, 54, 0.4) 100%)',
-                  borderColor: '#575757'
+                  background: gradientBg,
+                  borderColor: borderColor
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.borderColor = '#575757'}
-                onMouseLeave={(e) => e.currentTarget.style.borderColor = '#575757'}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = borderColor}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = borderColor}
               >
                 {/* Rectangle above SHOWCASE - disesuaikan dengan konten */}
-                <div className="w-full h-24 lg:h-28 rounded-lg mb-3" style={{ backgroundColor: '#575757' }}></div>
-                <p className="text-gray-400 text-xs mb-2">SHOWCASE</p>
+                <div className="w-full h-24 lg:h-28 rounded-lg mb-3" style={{ backgroundColor: placeholderColor }}></div>
+                <p className={`${textGrayColor} text-xs mb-2`}>SHOWCASE</p>
                 <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-white">Projects</h3>
-                  <div className="w-10 h-10 rounded-full" style={{ backgroundColor: '#575757' }}></div>
+                  <h3 className={`text-2xl font-bold ${textColor}`}>Projects</h3>
+                  <div className="w-10 h-10 rounded-full" style={{ backgroundColor: placeholderColor }}></div>
                 </div>
               </motion.div>
             </div>
@@ -261,14 +274,14 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
           transition={{ duration: 0.6 }}
           className="mb-10"
         >
-          <h3 className="text-gray-400 text-sm mb-4">Contribution Graph (Last Year)</h3>
+          <h3 className={`${textGrayColor} text-sm mb-4`}>Contribution Graph (Last Year)</h3>
           
           {/* Graph Grid */}
           <div 
             className="rounded-lg p-6 border overflow-x-auto"
             style={{ 
-              background: 'linear-gradient(to bottom, rgba(20, 20, 20, 0.4) 0%, rgba(26, 26, 26, 0.4) 39%, rgba(54, 54, 54, 0.4) 100%)',
-              borderColor: '#575757'
+              background: gradientBg,
+              borderColor: borderColor
             }}
           >
             {contributionData.length > 0 ? (
@@ -295,7 +308,7 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
                     style={{ 
                       width: '11px',
                       height: '11px',
-                      backgroundColor: '#575757'
+                      backgroundColor: placeholderColor
                     }}
                   />
                 ))}
@@ -303,7 +316,7 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
             )}
             
             {/* Legend - Bottom left */}
-            <div className="flex items-center gap-2 text-xs text-gray-400 mt-4">
+            <div className={`flex items-center gap-2 text-xs ${textGrayColor} mt-4`}>
               <span>Less</span>
               <div className="flex gap-1">
                 {[0, 1, 2, 3, 4].map((level) => (
@@ -330,17 +343,17 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="rounded-lg p-6 border transition-colors"
               style={{ 
-                background: 'linear-gradient(to bottom, rgba(20, 20, 20, 0.4) 0%, rgba(26, 26, 26, 0.4) 39%, rgba(54, 54, 54, 0.4) 100%)',
-                borderColor: '#575757'
+                background: gradientBg,
+                borderColor: borderColor
               }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#575757'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = '#575757'}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = borderColor}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = borderColor}
             >
               <div className="mb-3" style={{ color: themeColor }}>
                 {stat.icon}
               </div>
-              <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-              <div className="text-gray-400 text-sm">
+              <div className={`text-3xl font-bold ${textColor} mb-1`}>{stat.value}</div>
+              <div className={`${textGrayColor} text-sm`}>
                 {stat.label}
                 {stat.subLabel && (
                   <>

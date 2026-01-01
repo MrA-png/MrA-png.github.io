@@ -62,7 +62,7 @@ export const TechStack: React.FC<TechStackProps> = ({
         className="text-xs md:text-sm font-medium mb-6 tracking-wider uppercase text-center relative z-10 px-4"
         style={{ color: titleColor }}
       >
-        POWERING NEXT-GEN SOLUTIONS
+        TECHNOLOGIES I WORK WITH
       </motion.h2>
 
       {/* Technology Buttons */}
