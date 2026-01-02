@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import {
@@ -8,9 +9,11 @@ import {
   LinkedInIcon,
   EmailIcon,
 } from '../ui/icons';
-import { useActiveSection } from '../../hooks/useActiveSection';
+import { useActiveNav } from '../../hooks/useActiveNav';
 
 export const Footer: React.FC = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const { getThemeColor, isDarkMode } = useTheme();
   const themeColorValue = getThemeColor();
   
@@ -21,16 +24,37 @@ export const Footer: React.FC = () => {
   const quickLinks = [
     { name: 'Home', id: 'home' },
     { name: 'About', id: 'about' },
+    { name: 'Experience', id: 'experience' },
     { name: 'Projects', id: 'projects' },
-    { name: 'Blog', id: 'articles' },
+    { name: 'Articles & Notes', id: 'articles' },
+    { name: 'Contact', id: 'contact' },
   ];
 
   const sectionIds = quickLinks.map(link => link.id);
-  const activeSection = useActiveSection(sectionIds);
+  const activeSection = useActiveNav(sectionIds);
 
   // Helper function for smooth scroll
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
+    
+    // If we're not on home page, navigate to home first
+    if (pathname !== '/') {
+      router.push(`/#${targetId}`);
+      setTimeout(() => {
+        const element = document.getElementById(targetId);
+        if (element) {
+          const headerOffset = 80;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth',
+          });
+        }
+      }, 100);
+      return;
+    }
+    
     const element = document.getElementById(targetId);
     if (element) {
       const headerOffset = 80; // Height of fixed header
@@ -42,6 +66,11 @@ export const Footer: React.FC = () => {
         behavior: 'smooth',
       });
     }
+  };
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, link: { id: string; name: string }) => {
+    // All links should scroll to section, including articles
+    handleSmoothScroll(e, link.id);
   };
 
   const socialLinks = [
@@ -81,14 +110,17 @@ export const Footer: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             <h4 className={`font-bold ${textColor} mb-4`}>Quick Links</h4>
-            <ul className="space-y-2">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
               {quickLinks.map((link, index) => {
                 const isActive = activeSection === link.id;
+                // All links point to sections on home page
+                const href = `#${link.id}`;
+                
                 return (
                   <li key={index}>
                     <a
-                      href={`#${link.id}`}
-                      onClick={(e) => handleSmoothScroll(e, link.id)}
+                      href={href}
+                      onClick={(e) => handleLinkClick(e, link)}
                       className={`text-sm transition-all cursor-pointer relative inline-block ${
                         isActive ? 'font-semibold' : 'font-normal'
                       }`}

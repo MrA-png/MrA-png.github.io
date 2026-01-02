@@ -1,12 +1,15 @@
 'use client';
 
 import React from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTheme, ThemeColor } from '../../contexts/ThemeContext';
 import { Logo } from '../ui/Logo';
-import { useActiveSection } from '../../hooks/useActiveSection';
+import { useActiveNav } from '../../hooks/useActiveNav';
 
 export const Header: React.FC = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const { themeColor, setThemeColor, getThemeColor, isDarkMode, toggleDarkMode } = useTheme();
   const themeColorValue = getThemeColor();
   
@@ -17,18 +20,37 @@ export const Header: React.FC = () => {
   const navLinks = [
     { name: 'Home', id: 'home' },
     { name: 'About', id: 'about' },
-    { name: 'Articles & Notes', id: 'articles' },
     { name: 'Experience', id: 'experience' },
     { name: 'Projects', id: 'projects' },
+    { name: 'Articles & Notes', id: 'articles' },
     { name: 'Contact', id: 'contact' },
   ];
 
   const sectionIds = navLinks.map(link => link.id);
-  const activeSection = useActiveSection(sectionIds);
+  const activeSection = useActiveNav(sectionIds);
 
   // Helper function for smooth scroll
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
+    
+    // If we're not on home page, navigate to home first
+    if (pathname !== '/') {
+      router.push(`/#${targetId}`);
+      setTimeout(() => {
+        const element = document.getElementById(targetId);
+        if (element) {
+          const headerOffset = 80;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth',
+          });
+        }
+      }, 100);
+      return;
+    }
+    
     const element = document.getElementById(targetId);
     if (element) {
       const headerOffset = 80; // Height of fixed header
@@ -40,6 +62,11 @@ export const Header: React.FC = () => {
         behavior: 'smooth',
       });
     }
+  };
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: { id: string; name: string }) => {
+    // All links should scroll to section, including articles
+    handleSmoothScroll(e, link.id);
   };
 
   const colorPalette: { color: ThemeColor; bgClass: string; name: string }[] = [
@@ -79,11 +106,14 @@ export const Header: React.FC = () => {
       <nav className="hidden lg:flex items-center gap-6">
         {navLinks.map((link, index) => {
           const isActive = activeSection === link.id;
+          // All links point to sections on home page
+          const href = `#${link.id}`;
+          
           return (
             <motion.a
               key={link.id}
-              href={`#${link.id}`}
-              onClick={(e) => handleSmoothScroll(e, link.id)}
+              href={href}
+              onClick={(e) => handleNavClick(e, link)}
               className="transition-colors text-sm cursor-pointer relative"
               style={{ 
                 color: isActive ? themeColorValue : textColor,

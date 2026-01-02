@@ -127,7 +127,7 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = () => {
             {/* Right Side - View All Link */}
             <div className="flex items-center">
               <a
-                href="#"
+                href="/articles"
                 className="flex items-center text-base font-medium hover:opacity-80 transition-opacity"
                 style={{ color: textColor }}
                 onMouseEnter={(e) => {
