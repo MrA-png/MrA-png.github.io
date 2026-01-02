@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme, ThemeColor } from '../../contexts/ThemeContext';
 import { Logo } from '../ui/Logo';
+import { useActiveSection } from '../../hooks/useActiveSection';
 
 export const Header: React.FC = () => {
   const { themeColor, setThemeColor, getThemeColor, isDarkMode, toggleDarkMode } = useTheme();
@@ -14,13 +15,32 @@ export const Header: React.FC = () => {
   const navHoverColor = isDarkMode ? themeColorValue : themeColorValue;
 
   const navLinks = [
-    'Home',
-    'About',
-    'Articles & Notes',
-    'Experience',
-    'Projects',
-    'Contact',
+    { name: 'Home', id: 'home' },
+    { name: 'About', id: 'about' },
+    { name: 'Articles & Notes', id: 'articles' },
+    { name: 'Experience', id: 'experience' },
+    { name: 'Projects', id: 'projects' },
+    { name: 'Contact', id: 'contact' },
   ];
+
+  const sectionIds = navLinks.map(link => link.id);
+  const activeSection = useActiveSection(sectionIds);
+
+  // Helper function for smooth scroll
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const element = document.getElementById(targetId);
+    if (element) {
+      const headerOffset = 80; // Height of fixed header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   const colorPalette: { color: ThemeColor; bgClass: string; name: string }[] = [
     { color: 'grey', bgClass: 'bg-gray-500', name: 'grey' },
@@ -40,39 +60,62 @@ export const Header: React.FC = () => {
       style={{ backgroundColor: bgColor }}
     >
       {/* Logo */}
-      <motion.div
+      <motion.a
+        href="#home"
+        onClick={(e) => handleSmoothScroll(e, 'home')}
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 cursor-pointer"
       >
         <Logo />
         <span className="font-semibold text-lg">
           <span style={{ color: textColor }}>MrA</span>
           <span style={{ color: themeColorValue }}>-png</span>
         </span>
-      </motion.div>
+      </motion.a>
 
       {/* Navigation Links */}
       <nav className="hidden lg:flex items-center gap-6">
-        {navLinks.map((link, index) => (
-          <motion.a
-            key={link}
-            href={`#${link.toLowerCase().replace(' ', '-')}`}
-            className="transition-colors text-sm"
-            style={{ 
-              color: textColor,
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = navHoverColor)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = textColor)}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            {link}
-          </motion.a>
-        ))}
+        {navLinks.map((link, index) => {
+          const isActive = activeSection === link.id;
+          return (
+            <motion.a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => handleSmoothScroll(e, link.id)}
+              className="transition-colors text-sm cursor-pointer relative"
+              style={{ 
+                color: isActive ? themeColorValue : textColor,
+                fontWeight: isActive ? '600' : '400',
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.color = navHoverColor;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.color = textColor;
+                }
+              }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              {link.name}
+              {isActive && (
+                <motion.div
+                  className="absolute -bottom-1 left-0 right-0 h-0.5"
+                  style={{ backgroundColor: themeColorValue }}
+                  layoutId="activeIndicator"
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+            </motion.a>
+          );
+        })}
       </nav>
 
       {/* Right Side - Color Palette & Dark Mode Toggle */}
