@@ -2,25 +2,43 @@ import React from 'react';
 
 interface ExternalLinkIconProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export const ExternalLinkIcon: React.FC<ExternalLinkIconProps> = ({ 
-  className = 'w-4 h-4 inline-block ml-2'
+  className = 'w-4 h-4 inline-block ml-2',
+  style
 }) => {
   return (
     <svg
       className={className}
+      style={style}
+      width="16"
+      height="16"
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M12 12H4V4H8V2H4C3.46957 2 2.96086 2.21071 2.58579 2.58579C2.21071 2.96086 2 3.46957 2 4V12C2 12.5304 2.21071 13.0391 2.58579 13.4142C2.96086 13.7893 3.46957 14 4 14H12C12.5304 14 13.0391 13.7893 13.4142 13.4142C13.7893 13.0391 14 12.5304 14 12V8H12V12Z"
-        fill="currentColor"
+        d="M10 2H14V6"
+        stroke="currentColor"
+        strokeWidth="1.33333"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
-        d="M10 2V4H12.59L5.29 11.29L6.71 12.71L14 5.41V8H16V2H10Z"
-        fill="currentColor"
+        d="M6.66675 9.33333L14.0001 2"
+        stroke="currentColor"
+        strokeWidth="1.33333"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 8.66667V12.6667C12 13.0203 11.8595 13.3594 11.6095 13.6095C11.3594 13.8595 11.0203 14 10.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V5.33333C2 4.97971 2.14048 4.64057 2.39052 4.39052C2.64057 4.14048 2.97971 4 3.33333 4H7.33333"
+        stroke="currentColor"
+        strokeWidth="1.33333"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

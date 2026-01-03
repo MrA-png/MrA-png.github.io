@@ -58,9 +58,33 @@ export const HeroSection: React.FC = () => {
                  0 0 40px rgba(${glowColor.r}, ${glowColor.g}, ${glowColor.b}, 0.3),
                  0 0 60px rgba(${glowColor.r}, ${glowColor.g}, ${glowColor.b}, 0.2)`
   };
+
+  // Handle smooth scroll to section
+  const handleSmoothScroll = (targetId: string) => {
+    const element = document.getElementById(targetId);
+    if (element) {
+      const headerOffset = 80; // Height of fixed header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  // Handle Hire Me button click - scroll to contact section
+  const handleHireMeClick = () => {
+    handleSmoothScroll('contact');
+  };
+
+  // Handle View Projects button click - scroll to projects section
+  const handleViewProjectsClick = () => {
+    handleSmoothScroll('projects');
+  };
   
   return (
-    <section className="relative flex flex-col items-center justify-center min-h-screen px-6 py-20 max-w-7xl mx-auto pt-24">
+    <section className="relative flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 py-12 sm:py-16 md:py-20 max-w-7xl mx-auto pt-20 sm:pt-24">
       {/* Main Content */}
       <motion.div
         variants={containerVariants}
@@ -75,7 +99,7 @@ export const HeroSection: React.FC = () => {
       {/* Headline */}
       <motion.h1
         variants={itemVariants}
-        className="text-5xl md:text-7xl lg:text-8xl font-bold text-center mb-6 leading-tight px-4"
+        className="text-3xl sm:text-4xl md:text-7xl lg:text-8xl font-bold text-center mb-6 leading-tight px-4"
         style={{ color: textColor }}
       >
         <motion.span
@@ -112,10 +136,10 @@ export const HeroSection: React.FC = () => {
         variants={itemVariants}
         className="flex flex-col sm:flex-row gap-4 mt-4"
       >
-        <Button variant="primary" onClick={() => console.log('Hire Me clicked')}>
+        <Button variant="primary" onClick={handleHireMeClick}>
           Hire Me
         </Button>
-        <Button variant="secondary" onClick={() => console.log('View Projects clicked')}>
+        <Button variant="secondary" onClick={handleViewProjectsClick}>
           View Projects
         </Button>
       </motion.div>

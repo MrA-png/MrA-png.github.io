@@ -110,15 +110,15 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
   };
 
   return (
-    <section className={`min-h-screen ${bgColor} ${textColor} py-20`}>
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+    <section className={`min-h-screen ${bgColor} ${textColor} py-12 sm:py-16 md:py-20`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
         {/* Section Title */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className={`text-3xl md:text-4xl lg:text-5xl font-bold ${textColor} mb-12`}
+          className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold ${textColor} mb-8 sm:mb-10 md:mb-12`}
         >
           # Experience
         </motion.h2>
@@ -133,52 +133,58 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
         >
           {/* Vertical Timeline Line */}
           <div
-            className="absolute left-6 top-8 bottom-0 w-0.5"
+            className="absolute left-4 sm:left-6 top-8 bottom-0 w-0.5"
             style={{ backgroundColor: timelineColor }}
           />
 
           {/* Experience Items */}
-          <div className="space-y-12">
+          <div className="space-y-8 sm:space-y-12">
             {experiences.map((experience, index) => (
               <motion.div
                 key={index}
                 variants={itemVariants}
-                className="relative pl-20"
+                className="relative pl-12 sm:pl-16 md:pl-20"
               >
                 {/* Timeline Marker */}
                 <div
-                  className="absolute left-4 top-2 w-4 h-4 rounded-full"
+                  className="absolute left-2 sm:left-4 top-2 w-3 h-3 sm:w-4 sm:h-4 rounded-full"
                   style={{
                     backgroundColor: timelineColor,
-                    boxShadow: `0 0 0 4px ${isDarkMode ? '#000000' : '#FFFFFF'}`,
+                    boxShadow: `0 0 0 3px ${isDarkMode ? '#000000' : '#FFFFFF'}`,
                   }}
                 />
 
                 {/* Experience Card */}
                 <div
-                  className="rounded-lg p-6 border"
+                  className="rounded-lg p-4 sm:p-6 border"
                   style={{
                     backgroundColor: cardBg,
                     borderColor: borderColor,
                   }}
                 >
-                  {/* Job Title */}
-                  <h3 className={`text-xl md:text-2xl font-bold ${textColor} mb-2`}>
-                    {experience.title}
-                  </h3>
+                  {/* Header: Title/Company on left, Period/Location on right */}
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-3">
+                    {/* Left: Title and Company */}
+                    <div className="flex-1">
+                      <h3 className={`text-lg sm:text-xl md:text-2xl font-bold ${textColor} mb-2`}>
+                        {experience.title}
+                      </h3>
+                      <p className={`text-base sm:text-lg ${textGrayLightColor}`}>
+                        {experience.company}
+                      </p>
+                    </div>
 
-                  {/* Company Name */}
-                  <p className={`text-lg ${textGrayLightColor} mb-3`}>
-                    {experience.company}
-                  </p>
-
-                  {/* Period and Location */}
-                  <div className={`flex flex-wrap items-center gap-2 mb-4 ${textGrayColor} text-sm`}>
-                    <span>{experience.period}</span>
-                    <span>•</span>
-                    <span>{experience.location}</span>
-                    <span>•</span>
-                    <span>{experience.workType}</span>
+                    {/* Right: Period on top, Location/WorkType below */}
+                    <div className="flex flex-col items-start sm:items-end text-right">
+                      <span className={`${textGrayColor} text-sm font-medium mb-1`}>
+                        {experience.period}
+                      </span>
+                      <div className={`flex flex-wrap items-center gap-2 ${textGrayColor} text-sm`}>
+                        <span>{experience.location}</span>
+                        <span>•</span>
+                        <span>{experience.workType}</span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Achievements */}

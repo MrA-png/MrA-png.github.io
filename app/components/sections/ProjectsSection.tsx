@@ -142,8 +142,8 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
 
 
   return (
-    <section className={`min-h-screen ${bgColor} ${textColor} py-20`}>
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+    <section className={`min-h-screen ${bgColor} ${textColor} py-12 sm:py-16 md:py-20`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -156,7 +156,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
             {/* Left Side - Title */}
             <div className="flex-1">
               <p className={`${textGrayColor} text-sm mb-2`}>MY WORK</p>
-              <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${textColor} mb-2`}>
+              <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold ${textColor} mb-2`}>
                 Featured Projects
               </h2>
               {/* Orange Underline */}

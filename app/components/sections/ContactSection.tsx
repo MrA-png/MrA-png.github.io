@@ -62,27 +62,27 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
 
 
   return (
-    <section className={`min-h-screen ${bgColor} ${textColor} py-20`}>
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+    <section className={`min-h-screen ${bgColor} ${textColor} py-12 sm:py-16 md:py-20`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-12 md:mb-16"
         >
-          <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-4`}>
+          <h2 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4`}>
             <span className={textColor}>Let's Work </span>
             <span style={{ color: themeColorValue }}>Together</span>
           </h2>
-          <p className={`${textGrayLightColor} text-base md:text-lg max-w-2xl mx-auto`}>
+          <p className={`${textGrayLightColor} text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4`}>
             Have a project in mind or just want to chat? Feel free to reach out. I'm currently available for freelance projects and open to full-time opportunities.
           </p>
         </motion.div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Left Column - Contact Information */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -91,7 +91,7 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
             transition={{ duration: 0.6 }}
           >
             <div
-              className="rounded-lg p-6 border"
+              className="rounded-lg p-4 sm:p-6 border"
               style={{
                 backgroundColor: cardBg,
                 borderColor: borderColor,
@@ -105,7 +105,7 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
                   </div>
                   <div className="flex-1">
                     <p className={`font-bold ${textColor} mb-1`}>Email</p>
-                    <p className={textColor}>contact@mra.png</p>
+                    <p className={textColor}>work.azhrul@gmail.com</p>
                     <p className={`${textGrayColor} text-sm mt-1`}>
                       Response time: &lt; 24 hours
                     </p>
@@ -135,7 +135,9 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
               <p className={`${textColor} font-medium mb-4`}>Connect with me:</p>
               <div className="flex gap-4">
                 <a
-                  href="#"
+                  href="https://github.com/MrA-png"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full border-2 flex items-center justify-center hover:opacity-80 transition-opacity"
                   style={{
                     borderColor: textColor,
@@ -154,7 +156,9 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
                   <GithubIcon className="w-5 h-5" />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/in/azhrul-azim-ripai"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full border-2 flex items-center justify-center hover:opacity-80 transition-opacity"
                   style={{
                     borderColor: textColor,
@@ -173,7 +177,7 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
                   <LinkedInIcon className="w-5 h-5" />
                 </a>
                 <a
-                  href="#"
+                  href="mailto:work.azhrul@gmail.com"
                   className="w-10 h-10 rounded-full border-2 flex items-center justify-center hover:opacity-80 transition-opacity"
                   style={{
                     borderColor: textColor,

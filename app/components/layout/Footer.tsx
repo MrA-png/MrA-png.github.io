@@ -74,9 +74,9 @@ export const Footer: React.FC = () => {
   };
 
   const socialLinks = [
-    { name: 'GitHub', icon: GithubIcon, href: '#' },
-    { name: 'LinkedIn', icon: LinkedInIcon, href: '#' },
-    { name: 'Email', icon: EmailIcon, href: '#' },
+    { name: 'GitHub', icon: GithubIcon, href: 'https://github.com/MrA-png' },
+    { name: 'LinkedIn', icon: LinkedInIcon, href: 'https://www.linkedin.com/in/azhrul-azim-ripai' },
+    { name: 'Email', icon: EmailIcon, href: 'mailto:work.azhrul@gmail.com' },
   ];
 
   return (
@@ -165,10 +165,13 @@ export const Footer: React.FC = () => {
             <div className="flex gap-4">
               {socialLinks.map((social, index) => {
                 const IconComponent = social.icon;
+                const isExternalLink = social.href !== '#' && !social.href.startsWith('mailto:');
                 return (
                   <a
                     key={index}
                     href={social.href}
+                    target={isExternalLink ? "_blank" : undefined}
+                    rel={isExternalLink ? "noopener noreferrer" : undefined}
                     className="w-10 h-10 rounded-full border-2 flex items-center justify-center hover:opacity-80 transition-opacity"
                     style={{
                       borderColor: textColor,
