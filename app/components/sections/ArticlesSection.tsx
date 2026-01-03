@@ -98,8 +98,8 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = () => {
 
 
   return (
-    <section className={`min-h-screen ${bgColor} ${textColor} py-20`}>
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+    <section className={`min-h-screen ${bgColor} ${textColor} py-12 sm:py-16 md:py-20`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -113,7 +113,7 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = () => {
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <BookIcon style={{ color: themeColorValue }} />
-                <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${textColor}`}>
+                <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold ${textColor}`}>
                   Articles & Notes
                 </h2>
               </div>
