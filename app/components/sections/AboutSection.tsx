@@ -397,20 +397,22 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
           >
             <div className="flex justify-center w-full">
               <div 
-                className="github-calendar-wrapper"
+                className="github-calendar-wrapper w-full"
                 style={{
-                  colorScheme: isDarkMode ? 'dark' : 'light'
+                  colorScheme: isDarkMode ? 'dark' : 'light',
+                  minWidth: '100%'
                 }}
               >
                 <GitHubCalendarWrapper
                   username="mra-png"
-                  blockSize={11}
-                  blockMargin={4}
-                  fontSize={11}
+                  blockSize={16}
+                  blockMargin={6}
+                  fontSize={13}
                   weekStart={1}
                   colorScheme={isDarkMode ? 'dark' : 'light'}
+                  year="last"
                   labels={{
-                    totalCount: '{{count}} contributions in {{year}}',
+                    totalCount: '{{count}} contributions in the last year',
                     legend: {
                       less: 'Less',
                       more: 'More'
