@@ -38,6 +38,7 @@ body {
 .github-calendar-wrapper {
   width: 100%;
   min-width: 100%;
+  position: relative;
 }
 
 .github-calendar-wrapper svg {
@@ -50,4 +51,61 @@ body {
   width: 100% !important;
   display: flex;
   justify-content: center;
+}
+
+/* GitHub Calendar Tooltip Styles */
+.github-calendar-wrapper rect {
+  cursor: pointer !important;
+  transition: opacity 0.2s ease, stroke 0.2s ease;
+}
+
+.github-calendar-wrapper rect:hover {
+  opacity: 0.8 !important;
+  stroke: currentColor !important;
+  stroke-width: 1.5 !important;
+  filter: brightness(1.2);
+}
+
+/* Ensure tooltips are visible and not blocked */
+.github-calendar-wrapper svg rect[data-level],
+.github-calendar-wrapper svg rect[title] {
+  cursor: pointer !important;
+}
+
+/* Tooltip styling - react-github-calendar uses title attribute by default */
+.github-calendar-wrapper [title] {
+  position: relative;
+}
+
+/* Ensure tooltip appears on hover */
+.github-calendar-wrapper rect[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Custom tooltip container for react-github-calendar */
+.github-calendar-wrapper .react-activity-calendar__tooltip,
+.github-calendar-wrapper .react-github-calendar__tooltip,
+.github-calendar-wrapper [class*="tooltip"] {
+  position: absolute !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  color: white !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  pointer-events: none !important;
+  z-index: 10000 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
