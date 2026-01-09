@@ -58,7 +58,7 @@ export const HeroSection: React.FC = () => {
                  0 0 40px rgba(${glowColor.r}, ${glowColor.g}, ${glowColor.b}, 0.3),
                  0 0 60px rgba(${glowColor.r}, ${glowColor.g}, ${glowColor.b}, 0.2)`
   };
-
+  
   // Handle smooth scroll to section
   const handleSmoothScroll = (targetId: string) => {
     const element = document.getElementById(targetId);

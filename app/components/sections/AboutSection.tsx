@@ -389,18 +389,21 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
           
           {/* GitHub Calendar */}
           <div 
-            className="rounded-lg p-4 sm:p-6 border overflow-x-auto"
+            className="rounded-lg p-4 sm:p-6 border"
             style={{ 
               background: gradientBg,
-              borderColor: borderColor
+              borderColor: borderColor,
+              position: 'relative'
             }}
           >
-            <div className="flex justify-center w-full">
+            <div className="overflow-x-auto" style={{ position: 'relative' }}>
+            <div className="flex justify-center w-full" style={{ position: 'relative' }}>
               <div 
                 className="github-calendar-wrapper w-full"
                 style={{
                   colorScheme: isDarkMode ? 'dark' : 'light',
-                  minWidth: '100%'
+                  minWidth: '100%',
+                  position: 'relative'
                 }}
               >
                 <GitHubCalendarWrapper
@@ -420,6 +423,7 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
                   }}
                 />
               </div>
+            </div>
             </div>
           </div>
         </motion.div>
