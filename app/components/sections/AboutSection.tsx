@@ -393,17 +393,19 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
             style={{ 
               background: gradientBg,
               borderColor: borderColor,
-              position: 'relative'
+              position: 'relative',
+              overflow: 'visible'
             }}
           >
-            <div className="overflow-x-auto" style={{ position: 'relative' }}>
-            <div className="flex justify-center w-full" style={{ position: 'relative' }}>
+            <div className="overflow-x-auto" style={{ position: 'relative', overflowY: 'visible' }}>
+            <div className="flex justify-center w-full" style={{ position: 'relative', overflow: 'visible' }}>
               <div 
                 className="github-calendar-wrapper w-full"
                 style={{
                   colorScheme: isDarkMode ? 'dark' : 'light',
                   minWidth: '100%',
-                  position: 'relative'
+                  position: 'relative',
+                  overflow: 'visible'
                 }}
               >
                 <GitHubCalendarWrapper
