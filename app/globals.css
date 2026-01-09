@@ -33,3 +33,21 @@ body {
 .grid-cols-53 {
   grid-template-columns: repeat(53, minmax(0, 1fr));
 }
+
+/* GitHub Calendar Wrapper Styles */
+.github-calendar-wrapper {
+  width: 100%;
+  min-width: 100%;
+}
+
+.github-calendar-wrapper svg {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Ensure calendar fills the container */
+.github-calendar-wrapper > div {
+  width: 100% !important;
+  display: flex;
+  justify-content: center;
+}

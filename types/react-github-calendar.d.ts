@@ -8,6 +8,8 @@ declare module 'react-github-calendar' {
     fontSize?: number;
     weekStart?: number;
     colorScheme?: 'light' | 'dark';
+    year?: number | 'last';
+    transformData?: (data: any[]) => any[];
     labels?: {
       totalCount?: string;
       legend?: {

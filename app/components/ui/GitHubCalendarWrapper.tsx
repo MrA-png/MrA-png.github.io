@@ -9,6 +9,8 @@ interface GitHubCalendarWrapperProps {
   fontSize?: number;
   weekStart?: number;
   colorScheme?: 'light' | 'dark';
+  year?: number | 'last';
+  transformData?: (data: any[]) => any[];
   labels?: {
     totalCount?: string;
     legend?: {
@@ -53,6 +55,10 @@ export const GitHubCalendarWrapper: React.FC<GitHubCalendarWrapperProps> = (prop
     );
   }
 
-  return <CalendarComponent {...props} />;
+  return (
+    <div className="w-full" style={{ minWidth: '100%' }}>
+      <CalendarComponent {...props} />
+    </div>
+  );
 };
 

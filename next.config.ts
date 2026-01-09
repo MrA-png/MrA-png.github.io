@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
+  // No basePath needed for user/organization site (MrA-png.github.io)
+  trailingSlash: false,
 };
 
 export default nextConfig;
