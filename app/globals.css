@@ -72,24 +72,9 @@ body {
   cursor: pointer !important;
 }
 
-/* Tooltip styling - react-github-calendar uses title attribute by default */
-.github-calendar-wrapper [title] {
+/* Ensure native browser tooltip is visible */
+.github-calendar-wrapper rect[title] {
   position: relative;
-}
-
-/* Ensure tooltip appears on hover */
-.github-calendar-wrapper rect[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  pointer-events: none;
 }
 
 /* Custom tooltip container for react-github-calendar */
@@ -97,15 +82,33 @@ body {
 .github-calendar-wrapper .react-github-calendar__tooltip,
 .github-calendar-wrapper [class*="tooltip"] {
   position: absolute !important;
-  background: rgba(0, 0, 0, 0.9) !important;
+  background: rgba(0, 0, 0, 0.95) !important;
   color: white !important;
-  padding: 8px 12px !important;
+  padding: 10px 14px !important;
   border-radius: 6px !important;
-  font-size: 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
   pointer-events: none !important;
-  z-index: 10000 !important;
+  z-index: 10001 !important;
   white-space: nowrap !important;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
   opacity: 1 !important;
   visibility: visible !important;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif !important;
+}
+
+/* Custom tooltip styling */
+.github-calendar-custom-tooltip {
+  animation: tooltipFadeIn 0.2s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -90%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
 }
