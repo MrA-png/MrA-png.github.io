@@ -1,17 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Header } from '../../components/layout/Header';
 import { Footer } from '../../components/layout/Footer';
 import { experiences } from '../../data/experiences';
-import { customHighlightWords, customHighlightPatterns } from '../../config/highlightWords';
+import { highlightBold } from '../../utils/highlightBold';
 import { 
   MapPinIcon, 
   ExternalLinkIcon, 
-  ArrowRightIcon 
+  ArrowRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  XIcon
 } from '../../components/ui/icons';
 
 interface ExperienceDetailClientProps {
@@ -23,9 +26,77 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
   const { getThemeColor, isDarkMode } = useTheme();
   const themeColorValue = getThemeColor();
   const [imageError, setImageError] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
 
   // Find experience by ID
   const experience = experiences.find(exp => exp.id === experienceId);
+
+  // Get all images from images array only
+  const allImages = experience?.images && experience.images.length > 0
+    ? experience.images
+    : [];
+
+  const hasMultipleImages = allImages.length > 1;
+
+  // Reset image index when experience changes
+  useEffect(() => {
+    setCurrentImageIndex(0);
+    setImageError(false);
+    setIsPaused(false);
+    setIsModalOpen(false);
+    setModalImageIndex(0);
+  }, [experienceId]);
+
+  // Keyboard navigation for modal
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsModalOpen(false);
+      } else if (e.key === 'ArrowLeft') {
+        setModalImageIndex((prev) => 
+          prev === 0 ? allImages.length - 1 : prev - 1
+        );
+      } else if (e.key === 'ArrowRight') {
+        setModalImageIndex((prev) => 
+          prev === allImages.length - 1 ? 0 : prev + 1
+        );
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen, allImages.length]);
+
+  // Open modal with clicked image
+  const handleImageClick = (index: number) => {
+    setModalImageIndex(index);
+    setIsModalOpen(true);
+    setIsPaused(true); // Pause auto-play when modal opens
+  };
+
+  // Close modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsPaused(false); // Resume auto-play when modal closes
+  };
+
+  // Auto-play slider: change image every 5 seconds
+  useEffect(() => {
+    if (!hasMultipleImages || isPaused) return;
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => 
+        prev === allImages.length - 1 ? 0 : prev + 1
+      );
+    }, 5000); // 5 seconds
+
+    return () => clearInterval(interval);
+  }, [hasMultipleImages, isPaused, allImages.length]);
 
   // If experience not found, redirect or show error
   if (!experience) {
@@ -62,31 +133,22 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 
-  // Helper function to calculate duration from period (format: "Mar 2024 - Jun 2024")
+  // Helper function to calculate duration from period
+  // Supports formats: "Mar 2024 - Jun 2024" or "01 Dec 2025 – 03 Dec 2025" or "30 Jan 2025 - 10 Feb 2025"
   const calculateDurationFromPeriod = (period: string): string => {
     try {
-      // Split period by " - " to get start and end
-      const parts = period.split(' - ');
+      // Split period by " - " or " – " to get start and end
+      const parts = period.split(/\s*[-–]\s*/);
       if (parts.length !== 2) {
         return '';
       }
 
-      const [startStr, endStr] = parts;
+      const [startStr, endStr] = parts.map(s => s.trim());
       
       // Check if end is "Present"
-      if (endStr.trim() === 'Present') {
+      if (endStr === 'Present') {
         return 'Ongoing';
       }
-
-      // Parse start date (format: "Mar 2024")
-      const startParts = startStr.trim().split(' ');
-      const startMonth = startParts[0];
-      const startYear = parseInt(startParts[1]);
-
-      // Parse end date (format: "Jun 2024")
-      const endParts = endStr.trim().split(' ');
-      const endMonth = endParts[0];
-      const endYear = parseInt(endParts[1]);
 
       // Map month abbreviations to numbers
       const monthMap: { [key: string]: number } = {
@@ -94,25 +156,73 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
         'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
       };
 
-      const startMonthNum = monthMap[startMonth];
-      const endMonthNum = monthMap[endMonth];
+      // Parse start date - check if it has day (format: "01 Dec 2025" or "30 Jan 2025")
+      const startParts = startStr.split(' ');
+      let startDay = 1;
+      let startMonth: string;
+      let startYear: number;
 
-      if (startMonthNum === undefined || endMonthNum === undefined) {
+      if (startParts.length === 3 && !isNaN(parseInt(startParts[0]))) {
+        // Format with day: "01 Dec 2025"
+        startDay = parseInt(startParts[0]);
+        startMonth = startParts[1];
+        startYear = parseInt(startParts[2]);
+      } else if (startParts.length === 2) {
+        // Format without day: "Mar 2024"
+        startMonth = startParts[0];
+        startYear = parseInt(startParts[1]);
+      } else {
         return '';
       }
 
-      // Create dates (using first day of month for calculation)
-      const start = new Date(startYear, startMonthNum, 1);
-      const end = new Date(endYear, endMonthNum, 1);
+      // Parse end date - check if it has day
+      const endParts = endStr.split(' ');
+      let endDay = 1;
+      let endMonth: string;
+      let endYear: number;
 
-      // Calculate difference in months (inclusive)
-      // We need to count from start month to end month inclusively
+      if (endParts.length === 3 && !isNaN(parseInt(endParts[0]))) {
+        // Format with day: "03 Dec 2025" or "10 Feb 2025"
+        endDay = parseInt(endParts[0]);
+        endMonth = endParts[1];
+        endYear = parseInt(endParts[2]);
+      } else if (endParts.length === 2) {
+        // Format without day: "Jun 2024"
+        endMonth = endParts[0];
+        endYear = parseInt(endParts[1]);
+      } else {
+        return '';
+      }
+
+      const startMonthNum = monthMap[startMonth];
+      const endMonthNum = monthMap[endMonth];
+
+      if (startMonthNum === undefined || endMonthNum === undefined || isNaN(startYear) || isNaN(endYear)) {
+        return '';
+      }
+
+      // Create dates
+      const start = new Date(startYear, startMonthNum, startDay);
+      const end = new Date(endYear, endMonthNum, endDay);
+
+      // Calculate difference in days
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 because we count inclusively
+
+      // Calculate difference in months for comparison
       const yearsDiff = endYear - startYear;
       const monthsDiff = endMonthNum - startMonthNum;
-      let totalMonths = yearsDiff * 12 + monthsDiff + 1; // +1 because we count inclusively
+      let totalMonths = yearsDiff * 12 + monthsDiff;
+      
+      // Adjust months based on days
+      if (endDay < startDay) {
+        totalMonths -= 1;
+      }
+      totalMonths += 1; // +1 because we count inclusively
 
-      if (totalMonths === 0) {
-        return 'Less than 1 month';
+      // Return appropriate format based on duration
+      if (diffDays < 30) {
+        return `${diffDays} ${diffDays === 1 ? 'day' : 'days'}`;
       } else if (totalMonths === 1) {
         return '1 month';
       } else if (totalMonths < 12) {
@@ -132,102 +242,6 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
     }
   };
 
-  // Helper function to highlight bold certain words (percentages, numbers, technologies, key terms)
-  const highlightBold = (text: string): React.ReactNode => {
-    // Patterns to match:
-    // 1. Percentages: 85%, 87%, 79%, 20%, etc.
-    // 2. Numbers with units: 13 features, 11 sprints, etc.
-    // 3. Technologies: Laravel 9, Supabase, Vue.js, Nuxt.js, RESTful API, etc.
-    // 4. Key terms: CRUD, API, etc.
-    // 5. Custom words from configuration
-    
-    // Build custom words pattern if there are any custom words
-    const customWordsPattern = customHighlightWords.length > 0
-      ? new RegExp(`\\b(${customHighlightWords.map(word => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'gi')
-      : null;
-    
-    const patterns = [
-      // Percentages
-      /(\d+%)/g,
-      // Numbers with common units/words
-      /(\d+\s+(?:features?|sprints?|months?|years?|days?|weeks?|users?|applications?|projects?|teams?|sprints?))/gi,
-      // Technologies (case-insensitive)
-      /(Laravel\s+\d+|Supabase|Vue\.js|Nuxt|Nuxt\.js|RESTful\s+API|PHP|JavaScript|CSS|HTML|Vuex|Bootstrap)/gi,
-      // Key technical terms (with word boundaries to avoid matching substrings)
-      /\b(CRUD|API|APIs|RESTful|Backend-as-a-Service|BaaS)\b/gi,
-      // Methodology terms
-      /\b(Agile|sprint|sprints)\b/gi,
-      // Custom words from configuration
-      ...(customWordsPattern ? [customWordsPattern] : []),
-      // Custom regex patterns from configuration
-      ...customHighlightPatterns,
-    ];
-
-    let result: React.ReactNode[] = [];
-    let lastIndex = 0;
-    let parts: Array<{ text: string; shouldBold: boolean }> = [];
-
-    // Find all matches
-    const matches: Array<{ index: number; length: number }> = [];
-    patterns.forEach(pattern => {
-      const regex = new RegExp(pattern.source, pattern.flags);
-      let match;
-      while ((match = regex.exec(text)) !== null) {
-        matches.push({ index: match.index, length: match[0].length });
-      }
-    });
-
-    // Sort matches by index
-    matches.sort((a, b) => a.index - b.index);
-
-    // Remove overlapping matches (keep the first one)
-    const nonOverlapping: Array<{ index: number; length: number }> = [];
-    matches.forEach(match => {
-      const overlaps = nonOverlapping.some(existing => 
-        match.index < existing.index + existing.length && 
-        match.index + match.length > existing.index
-      );
-      if (!overlaps) {
-        nonOverlapping.push(match);
-      }
-    });
-
-    // Build parts array
-    nonOverlapping.forEach(match => {
-      // Add text before match
-      if (match.index > lastIndex) {
-        parts.push({ text: text.substring(lastIndex, match.index), shouldBold: false });
-      }
-      // Add matched text (should be bold)
-      parts.push({ text: text.substring(match.index, match.index + match.length), shouldBold: true });
-      lastIndex = match.index + match.length;
-    });
-
-    // Add remaining text
-    if (lastIndex < text.length) {
-      parts.push({ text: text.substring(lastIndex), shouldBold: false });
-    }
-
-    // If no matches, return original text
-    if (parts.length === 0) {
-      return text;
-    }
-
-    // Convert parts to React nodes
-    return (
-      <>
-        {parts.map((part, idx) => 
-          part.shouldBold ? (
-            <strong key={idx} className="font-bold" style={{ color: themeColorValue }}>
-              {part.text}
-            </strong>
-          ) : (
-            <span key={idx}>{part.text}</span>
-          )
-        )}
-      </>
-    );
-  };
 
   // Colors based on theme mode
   const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
@@ -271,33 +285,131 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
             transition={{ duration: 0.5 }}
             className="mb-8"
           >
-            {/* Featured Image */}
-            <div className="w-full h-64 sm:h-80 md:h-96 rounded-lg overflow-hidden mb-6 border" style={{ borderColor: borderColor }}>
-              {(experience.image || experience.thumbnail) && !imageError ? (
-                <img
-                  src={experience.image || experience.thumbnail}
-                  alt={experience.title}
-                  className="w-full h-full object-cover"
-                  onError={() => {
-                    setImageError(true);
-                  }}
-                />
-              ) : (
-                <div
-                  className="w-full h-full flex items-center justify-center"
-                  style={{
-                    background: `linear-gradient(135deg, ${hexToRgba(themeColorValue, 0.2)} 0%, ${hexToRgba(themeColorValue, 0.1)} 100%)`,
-                  }}
+            {/* Featured Image / Image Slider */}
+            {(() => {
+              const hasImages = allImages.length > 0 && !imageError;
+
+              return (
+                <div 
+                  className="w-full h-64 sm:h-80 md:h-96 rounded-lg overflow-hidden mb-6 border relative" 
+                  style={{ borderColor: borderColor }}
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
                 >
-                  <div
-                    className="text-6xl sm:text-7xl md:text-8xl font-bold opacity-20"
-                    style={{ color: themeColorValue }}
-                  >
-                    {experience.title.charAt(0)}
-                  </div>
+                  {hasImages ? (
+                    <>
+                      {/* Image Slider */}
+                      <div className="relative w-full h-full">
+                        <motion.img
+                          key={currentImageIndex}
+                          src={allImages[currentImageIndex]}
+                          alt={`${experience.title} - Image ${currentImageIndex + 1}`}
+                          className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity duration-200"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3 }}
+                          onError={() => {
+                            setImageError(true);
+                          }}
+                          onClick={() => handleImageClick(currentImageIndex)}
+                        />
+
+                        {/* Navigation Buttons - Only show if multiple images */}
+                        {hasMultipleImages && (
+                          <>
+                            {/* Previous Button */}
+                            <button
+                              onClick={() => {
+                                setCurrentImageIndex((prev) => 
+                                  prev === 0 ? allImages.length - 1 : prev - 1
+                                );
+                                setIsPaused(true);
+                                // Resume auto-play after 3 seconds of inactivity
+                                setTimeout(() => setIsPaused(false), 3000);
+                              }}
+                              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110"
+                              style={{
+                                backgroundColor: hexToRgba(themeColorValue, 0.2),
+                                color: themeColorValue,
+                              }}
+                              aria-label="Previous image"
+                            >
+                              <ChevronLeftIcon className="w-6 h-6" />
+                            </button>
+
+                            {/* Next Button */}
+                            <button
+                              onClick={() => {
+                                setCurrentImageIndex((prev) => 
+                                  prev === allImages.length - 1 ? 0 : prev + 1
+                                );
+                                setIsPaused(true);
+                                // Resume auto-play after 3 seconds of inactivity
+                                setTimeout(() => setIsPaused(false), 3000);
+                              }}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110"
+                              style={{
+                                backgroundColor: hexToRgba(themeColorValue, 0.2),
+                                color: themeColorValue,
+                              }}
+                              aria-label="Next image"
+                            >
+                              <ChevronRightIcon className="w-6 h-6" />
+                            </button>
+
+                            {/* Dots Indicator */}
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+                              {allImages.map((_, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => {
+                                    setCurrentImageIndex(index);
+                                    setIsPaused(true);
+                                    // Resume auto-play after 3 seconds of inactivity
+                                    setTimeout(() => setIsPaused(false), 3000);
+                                  }}
+                                  className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                                    index === currentImageIndex ? 'scale-125' : 'opacity-50 hover:opacity-75'
+                                  }`}
+                                  style={{
+                                    backgroundColor: index === currentImageIndex ? themeColorValue : 'white',
+                                  }}
+                                  aria-label={`Go to image ${index + 1}`}
+                                />
+                              ))}
+                            </div>
+
+                            {/* Image Counter */}
+                            <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full backdrop-blur-sm text-sm font-medium"
+                              style={{
+                                backgroundColor: hexToRgba(themeColorValue, 0.2),
+                                color: themeColorValue,
+                              }}
+                            >
+                              {currentImageIndex + 1} / {allImages.length}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div
+                      className="w-full h-full flex items-center justify-center"
+                      style={{
+                        background: `linear-gradient(135deg, ${hexToRgba(themeColorValue, 0.2)} 0%, ${hexToRgba(themeColorValue, 0.1)} 100%)`,
+                      }}
+                    >
+                      <div
+                        className="text-6xl sm:text-7xl md:text-8xl font-bold opacity-20"
+                        style={{ color: themeColorValue }}
+                      >
+                        {experience.title.charAt(0)}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })()}
 
             <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${textColor} mb-4`}>
               {experience.title}
@@ -344,7 +456,7 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
               >
                 <h3 className={`text-xl font-bold ${textColor} mb-3`}>Company / Project Info</h3>
                 <p className={`${textGrayLightColor} leading-relaxed`}>
-                  {highlightBold(experience.companyInfo)}
+                  {highlightBold(experience.companyInfo || '', themeColorValue)}
                 </p>
               </div>
             </motion.div>
@@ -367,7 +479,7 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
               >
                 <h3 className={`text-xl font-bold ${textColor} mb-3`}>Project / Product Overview</h3>
                 <p className={`${textGrayLightColor} leading-relaxed`}>
-                  {highlightBold(experience.projectOverview)}
+                  {highlightBold(experience.projectOverview || '', themeColorValue)}
                 </p>
               </div>
             </motion.div>
@@ -393,7 +505,7 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
                   {experience.responsibilities.map((responsibility, idx) => (
                     <li key={idx} className={`flex items-start ${textGrayLightColor}`}>
                       <span className="mr-3 mt-1" style={{ color: themeColorValue }}>•</span>
-                      <span className="leading-relaxed">{highlightBold(responsibility)}</span>
+                      <span className="leading-relaxed">{highlightBold(responsibility, themeColorValue)}</span>
                     </li>
                   ))}
                 </ul>
@@ -458,7 +570,7 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
                   {experience.keyAchievements.map((achievement, idx) => (
                     <li key={idx} className={`flex items-start ${textGrayLightColor}`}>
                       <span className="mr-3 mt-1" style={{ color: themeColorValue }}>•</span>
-                      <span className="leading-relaxed text-base">{highlightBold(achievement)}</span>
+                      <span className="leading-relaxed text-base">{highlightBold(achievement, themeColorValue)}</span>
                     </li>
                   ))}
                 </ul>
@@ -488,13 +600,13 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
                       <div className="mb-2">
                         <h4 className={`font-semibold ${textColor} mb-1`}>Challenge:</h4>
                         <p className={`${textGrayLightColor} leading-relaxed`}>
-                          {highlightBold(challenge.challenge)}
+                          {highlightBold(challenge.challenge, themeColorValue)}
                         </p>
                       </div>
                       <div>
                         <h4 className={`font-semibold ${textColor} mb-1`}>Solution:</h4>
                         <p className={`${textGrayLightColor} leading-relaxed`}>
-                          {highlightBold(challenge.solution)}
+                          {highlightBold(challenge.solution, themeColorValue)}
                         </p>
                       </div>
                     </div>
@@ -545,6 +657,121 @@ export function ExperienceDetailClient({ experienceId }: ExperienceDetailClientP
         </div>
       </section>
       <Footer />
+
+      {/* Image Preview Modal */}
+      <AnimatePresence>
+        {isModalOpen && allImages.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)' }}
+            onClick={handleCloseModal}
+          >
+          {/* Close Button */}
+          <button
+            onClick={handleCloseModal}
+            className="absolute top-4 right-4 z-60 p-3 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110"
+            style={{
+              backgroundColor: hexToRgba(themeColorValue, 0.2),
+              color: 'white',
+            }}
+            aria-label="Close modal"
+          >
+            <XIcon className="w-6 h-6" />
+          </button>
+
+          {/* Modal Content */}
+          <div 
+            className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Previous Button */}
+            {hasMultipleImages && (
+              <button
+                onClick={() => {
+                  setModalImageIndex((prev) => 
+                    prev === 0 ? allImages.length - 1 : prev - 1
+                  );
+                }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-60 p-3 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110"
+                style={{
+                  backgroundColor: hexToRgba(themeColorValue, 0.3),
+                  color: 'white',
+                }}
+                aria-label="Previous image"
+              >
+                <ChevronLeftIcon className="w-8 h-8" />
+              </button>
+            )}
+
+            {/* Image */}
+            <motion.img
+              key={modalImageIndex}
+              src={allImages[modalImageIndex]}
+              alt={`${experience.title} - Image ${modalImageIndex + 1}`}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            />
+
+            {/* Next Button */}
+            {hasMultipleImages && (
+              <button
+                onClick={() => {
+                  setModalImageIndex((prev) => 
+                    prev === allImages.length - 1 ? 0 : prev + 1
+                  );
+                }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-60 p-3 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110"
+                style={{
+                  backgroundColor: hexToRgba(themeColorValue, 0.3),
+                  color: 'white',
+                }}
+                aria-label="Next image"
+              >
+                <ChevronRightIcon className="w-8 h-8" />
+              </button>
+            )}
+
+            {/* Image Counter */}
+            {hasMultipleImages && (
+              <div 
+                className="absolute top-4 left-1/2 -translate-x-1/2 z-60 px-4 py-2 rounded-full backdrop-blur-sm text-sm font-medium"
+                style={{
+                  backgroundColor: hexToRgba(themeColorValue, 0.3),
+                  color: 'white',
+                }}
+              >
+                {modalImageIndex + 1} / {allImages.length}
+              </div>
+            )}
+
+            {/* Dots Indicator */}
+            {hasMultipleImages && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-60 flex gap-2">
+                {allImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setModalImageIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                      index === modalImageIndex ? 'scale-125' : 'opacity-50 hover:opacity-75'
+                    }`}
+                    style={{
+                      backgroundColor: index === modalImageIndex ? themeColorValue : 'white',
+                    }}
+                    aria-label={`Go to image ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
