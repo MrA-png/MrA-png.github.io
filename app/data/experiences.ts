@@ -28,7 +28,7 @@ export const experiences: ExperienceDetail[] = [
   {
     id: 'frontend-developer-invaderzone',
     title: 'Front End Developer',
-    company: 'Invaderzone.com – PT Siber Integrasi Teknologi',
+    company: 'Invaderzone.com - PT Siber Integrasi Teknologi',
     period: '01 Dec 2025 - 03 Dec 2025',
     location: 'Remote, Indonesia',
     workType: 'Project Based',
