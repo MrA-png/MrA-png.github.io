@@ -14,4 +14,7 @@ export { TwitterIcon } from './TwitterIcon';
 export { BookIcon } from './BookIcon';
 export { ArrowRightIcon } from './ArrowRightIcon';
 export { ExternalLinkIcon } from './ExternalLinkIcon';
+export { ChevronLeftIcon } from './ChevronLeftIcon';
+export { ChevronRightIcon } from './ChevronRightIcon';
+export { XIcon } from './XIcon';
 
