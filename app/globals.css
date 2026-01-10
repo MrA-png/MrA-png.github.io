@@ -5,6 +5,7 @@
   --foreground: #ffffff;
 }
 
+/* @theme is a valid Tailwind CSS v4 directive - linter may not recognize it yet */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -111,4 +112,52 @@ body {
     opacity: 1;
     transform: translate(-50%, -100%);
   }
+}
+
+/* Shimmer loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-loading {
+  position: relative;
+  overflow: hidden;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.shimmer-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 25%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0.4) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+html:not(.dark) .shimmer-loading::before,
+body:not(.dark) .shimmer-loading::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.4) 25%,
+    rgba(0, 0, 0, 0.7) 50%,
+    rgba(0, 0, 0, 0.4) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
 }

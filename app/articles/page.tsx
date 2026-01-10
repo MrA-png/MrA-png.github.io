@@ -1,25 +1,23 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
-import { BookIcon, ArrowRightIcon } from '../components/ui/icons';
-
-interface Article {
-  id: number;
-  date: string;
-  readTime: string;
-  title: string;
-  description: string;
-  tags: string[];
-  link?: string;
-}
+import { BookIcon, ArrowRightIcon, ExternalLinkIcon } from '../components/ui/icons';
+import { articles } from '../data/articles';
 
 export default function ArticlesPage() {
+  const router = useRouter();
   const { getThemeColor, isDarkMode, themeColor } = useTheme();
   const themeColorValue = getThemeColor();
+
+  // Handle card click to navigate to detail page
+  const handleCardClick = (articleId: string) => {
+    router.push(`/article/${articleId}`);
+  };
   
   // Helper function to convert hex to rgba
   const hexToRgba = (hex: string, alpha: number): string => {
@@ -39,64 +37,6 @@ export default function ArticlesPage() {
   
   // Card background color: #18181B with 40% opacity
   const cardBg = 'rgba(24, 24, 27, 0.4)';
-
-  // All articles data (extended list)
-  const articles: Article[] = [
-    {
-      id: 1,
-      date: 'Dec 12, 2024',
-      readTime: '5 min read',
-      title: 'The Future of Frontend: Micro-frontends & Module Federation',
-      description: 'Exploring how large scale applications are shifting towards distributed architectures using Webpack Module Federation.',
-      tags: ['Tech', 'Architecture'],
-      link: '#',
-    },
-    {
-      id: 2,
-      date: 'Nov 28, 2024',
-      readTime: '8 min read',
-      title: 'Mastering React Performance Optimization',
-      description: 'A deep dive into useMemo, useCallback, and React Server Components to build lightning fast apps.',
-      tags: ['React', 'Performance'],
-      link: '#',
-    },
-    {
-      id: 3,
-      date: 'Oct 15, 2024',
-      readTime: '6 min read',
-      title: 'Building Resilient APIs with Node.js',
-      description: 'Best practices for error handling, validation, and logging in Node.js backend services.',
-      tags: ['Backend', 'Node.js'],
-      link: '#',
-    },
-    {
-      id: 4,
-      date: 'Sep 20, 2024',
-      readTime: '7 min read',
-      title: 'TypeScript Best Practices for Large Codebases',
-      description: 'How to structure TypeScript projects, manage types, and maintain code quality at scale.',
-      tags: ['TypeScript', 'Best Practices'],
-      link: '#',
-    },
-    {
-      id: 5,
-      date: 'Aug 10, 2024',
-      readTime: '6 min read',
-      title: 'CSS Grid vs Flexbox: When to Use What',
-      description: 'A comprehensive guide to choosing the right layout method for your design needs.',
-      tags: ['CSS', 'Web Design'],
-      link: '#',
-    },
-    {
-      id: 6,
-      date: 'Jul 5, 2024',
-      readTime: '9 min read',
-      title: 'Understanding Webpack and Modern Build Tools',
-      description: 'Deep dive into module bundlers, code splitting, and optimizing your build process.',
-      tags: ['Build Tools', 'Webpack'],
-      link: '#',
-    },
-  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -174,6 +114,7 @@ export default function ArticlesPage() {
                   backgroundColor: cardBg,
                   borderColor: borderColor,
                 }}
+                onClick={() => handleCardClick(article.id)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = themeColorValue;
                   e.currentTarget.style.transform = 'translateY(-4px)';
@@ -215,14 +156,12 @@ export default function ArticlesPage() {
                 </div>
 
                 {/* Read More Link */}
-                <a
-                  href={article.link || '#'}
-                  className="inline-flex items-center text-sm font-medium hover:opacity-80 transition-opacity"
-                  style={{ color: themeColorValue }}
-                >
-                  Read More
-                  <ArrowRightIcon />
-                </a>
+                <div className="flex items-center justify-end mt-4 pt-4 border-t" style={{ borderColor: borderColor }}>
+                  <div className="flex items-center gap-2 text-sm font-medium" style={{ color: themeColorValue }}>
+                    <span>Read Article</span>
+                    <ExternalLinkIcon className="w-4 h-4" />
+                  </div>
+                </div>
               </motion.div>
             ))}
           </motion.div>
