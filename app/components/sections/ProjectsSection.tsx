@@ -187,9 +187,9 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
 
               {/* Thumbnail */}
               <div className="w-full h-48 mb-4 rounded-lg overflow-hidden relative">
-                {project.thumbnail ? (
+                {project.images && project.images.length > 0 ? (
                   <img
-                    src={project.thumbnail}
+                    src={project.images[0]}
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
