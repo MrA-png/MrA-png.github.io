@@ -2,23 +2,18 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useTheme } from '../../contexts/ThemeContext';
-
-interface Experience {
-  title: string;
-  company: string;
-  period: string;
-  location: string;
-  workType: string;
-  achievements: string[];
-  technologies: string[];
-}
+import { experiences } from '../../data/experiences';
+import { ExternalLinkIcon } from '../ui/icons';
+import { customHighlightWords, customHighlightPatterns } from '../../config/highlightWords';
 
 interface ExperienceSectionProps {
   // Optional props for customization
 }
 
 export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
+  const router = useRouter();
   const { getThemeColor, isDarkMode, themeColor } = useTheme();
   const themeColorValue = getThemeColor();
   
@@ -28,6 +23,103 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
+  // Helper function to highlight bold certain words (percentages, numbers, technologies, key terms)
+  const highlightBold = (text: string): React.ReactNode => {
+    // Patterns to match:
+    // 1. Percentages: 85%, 87%, 79%, 20%, etc.
+    // 2. Numbers with units: 13 features, 11 sprints, etc.
+    // 3. Technologies: Laravel 9, Supabase, Vue.js, Nuxt.js, RESTful API, etc.
+    // 4. Key terms: CRUD, API, etc.
+    // 5. Custom words from configuration
+    
+    // Build custom words pattern if there are any custom words
+    const customWordsPattern = customHighlightWords.length > 0
+      ? new RegExp(`\\b(${customHighlightWords.map(word => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'gi')
+      : null;
+    
+    const patterns = [
+      // Percentages
+      /(\d+%)/g,
+      // Numbers with common units/words
+      /(\d+\s+(?:features?|sprints?|months?|years?|days?|weeks?|users?|applications?|projects?|teams?|sprints?))/gi,
+      // Technologies (case-insensitive)
+      /(Laravel\s+\d+|Supabase|Vue\.js|Nuxt|Nuxt\.js|RESTful\s+API|PHP|JavaScript|CSS|HTML|Vuex|Bootstrap)/gi,
+      // Key technical terms (with word boundaries to avoid matching substrings)
+      /\b(CRUD|API|APIs|RESTful|Backend-as-a-Service|BaaS)\b/gi,
+      // Methodology terms
+      /\b(Agile|sprint|sprints)\b/gi,
+      // Custom words from configuration
+      ...(customWordsPattern ? [customWordsPattern] : []),
+      // Custom regex patterns from configuration
+      ...customHighlightPatterns,
+    ];
+
+    let result: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let parts: Array<{ text: string; shouldBold: boolean }> = [];
+
+    // Find all matches
+    const matches: Array<{ index: number; length: number }> = [];
+    patterns.forEach(pattern => {
+      const regex = new RegExp(pattern.source, pattern.flags);
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        matches.push({ index: match.index, length: match[0].length });
+      }
+    });
+
+    // Sort matches by index
+    matches.sort((a, b) => a.index - b.index);
+
+    // Remove overlapping matches (keep the first one)
+    const nonOverlapping: Array<{ index: number; length: number }> = [];
+    matches.forEach(match => {
+      const overlaps = nonOverlapping.some(existing => 
+        match.index < existing.index + existing.length && 
+        match.index + match.length > existing.index
+      );
+      if (!overlaps) {
+        nonOverlapping.push(match);
+      }
+    });
+
+    // Build parts array
+    nonOverlapping.forEach(match => {
+      // Add text before match
+      if (match.index > lastIndex) {
+        parts.push({ text: text.substring(lastIndex, match.index), shouldBold: false });
+      }
+      // Add matched text (should be bold)
+      parts.push({ text: text.substring(match.index, match.index + match.length), shouldBold: true });
+      lastIndex = match.index + match.length;
+    });
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push({ text: text.substring(lastIndex), shouldBold: false });
+    }
+
+    // If no matches, return original text
+    if (parts.length === 0) {
+      return text;
+    }
+
+    // Convert parts to React nodes
+    return (
+      <>
+        {parts.map((part, idx) => 
+          part.shouldBold ? (
+            <strong key={idx} className="font-bold" style={{ color: themeColorValue }}>
+              {part.text}
+            </strong>
+          ) : (
+            <span key={idx}>{part.text}</span>
+          )
+        )}
+      </>
+    );
   };
   
   // Colors based on theme mode
@@ -43,48 +135,10 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
   // Card background color: #18181B with 40% opacity
   const cardBg = 'rgba(24, 24, 27, 0.4)';
 
-  // Experience data
-  const experiences: Experience[] = [
-    {
-      title: 'Senior Frontend Engineer',
-      company: 'Tech Innovations Inc.',
-      period: '2023 - Present',
-      location: 'Remote',
-      workType: 'Fulltime',
-      achievements: [
-        'Led the migration of a legacy monolithic app to micro-frontends using Module Federation.',
-        'Improved core web vitals by 40%, resulting in a 15% increase in conversion.',
-        'Mentored 3 junior developers and established code review standards.',
-      ],
-      technologies: ['React', 'Next.js', 'TypeScript', 'GraphQL'],
-    },
-    {
-      title: 'Fullstack Developer',
-      company: 'Creative Studio',
-      period: '2021 - 2023',
-      location: 'Jakarta, ID',
-      workType: 'Hybrid',
-      achievements: [
-        'Developed end-to-end e-commerce solutions for 10+ major clients.',
-        'Integrated payment gateways and complex shipping logic.',
-        'Collaborated with designers to implement pixel-perfect UI/UX.',
-      ],
-      technologies: ['Vue.js', 'Laravel', 'MySQL', 'Tailwind'],
-    },
-    {
-      title: 'Frontend Developer',
-      company: 'StartUp Alpha',
-      period: '2019 - 2021',
-      location: 'Bandung, ID',
-      workType: 'On-site',
-      achievements: [
-        'Built the MVP of the company\'s SaaS product from scratch.',
-        'Implemented real-time features using WebSockets.',
-        'Reduced bundle size by 60% through code splitting.',
-      ],
-      technologies: ['React', 'Redux', 'Firebase', 'SCSS'],
-    },
-  ];
+  // Handle card click to navigate to detail page
+  const handleCardClick = (experienceId: string) => {
+    router.push(`/experience/${experienceId}`);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -139,9 +193,9 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
 
           {/* Experience Items */}
           <div className="space-y-8 sm:space-y-12">
-            {experiences.map((experience, index) => (
+            {experiences.map((experience) => (
               <motion.div
-                key={index}
+                key={experience.id}
                 variants={itemVariants}
                 className="relative pl-12 sm:pl-16 md:pl-20"
               >
@@ -156,10 +210,19 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
 
                 {/* Experience Card */}
                 <div
-                  className="rounded-lg p-4 sm:p-6 border"
+                  className="rounded-lg p-4 sm:p-6 border cursor-pointer transition-all duration-300"
                   style={{
                     backgroundColor: cardBg,
                     borderColor: borderColor,
+                  }}
+                  onClick={() => handleCardClick(experience.id)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = themeColorValue;
+                    e.currentTarget.style.transform = 'translateX(8px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = borderColor;
+                    e.currentTarget.style.transform = 'translateX(0)';
                   }}
                 >
                   {/* Header: Title/Company on left, Period/Location on right */}
@@ -192,7 +255,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
                     {experience.achievements.map((achievement, idx) => (
                       <li key={idx} className={`flex items-start ${textGrayLightColor} text-sm md:text-base`}>
                         <span className="mr-2" style={{ color: timelineColor }}>•</span>
-                        <span>{achievement}</span>
+                        <span>{highlightBold(achievement)}</span>
                       </li>
                     ))}
                   </ul>
@@ -212,6 +275,14 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
                         {tech}
                       </span>
                     ))}
+                  </div>
+
+                  {/* View Details Link */}
+                  <div className="flex items-center justify-end mt-4 pt-4 border-t" style={{ borderColor: borderColor }}>
+                    <div className="flex items-center gap-2 text-sm font-medium" style={{ color: themeColorValue }}>
+                      <span>View Details</span>
+                      <ExternalLinkIcon className="w-4 h-4" />
+                    </div>
                   </div>
                 </div>
               </motion.div>

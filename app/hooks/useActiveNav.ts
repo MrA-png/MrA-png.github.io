@@ -9,6 +9,22 @@ export const useActiveNav = (sectionIds: string[]) => {
 
   useEffect(() => {
     // If we're on a different page (not home), set active based on pathname
+    // Check for detail pages first (before exact matches)
+    if (pathname.startsWith('/experience/')) {
+      setActiveSection('experience');
+      return;
+    }
+    
+    if (pathname.startsWith('/project/')) {
+      setActiveSection('projects');
+      return;
+    }
+    
+    if (pathname.startsWith('/article/')) {
+      setActiveSection('articles');
+      return;
+    }
+    
     if (pathname === '/articles') {
       setActiveSection('articles');
       return;

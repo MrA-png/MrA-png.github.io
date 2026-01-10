@@ -1,25 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ExternalLinkIcon } from '../ui/icons';
-
-interface Project {
-  id: number;
-  title: string;
-  category: 'Frontend' | 'Fullstack' | 'UI Only';
-  description: string;
-  technologies: string[];
-  link?: string;
-  thumbnail?: string;
-}
+import { projects } from '../../data/projects';
 
 interface ProjectsSectionProps {
   // Optional props for customization
 }
 
 export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
+  const router = useRouter();
   const { getThemeColor, isDarkMode, themeColor } = useTheme();
   const themeColorValue = getThemeColor();
   const [activeFilter, setActiveFilter] = useState<string>('All');
@@ -44,54 +37,10 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
   // Card background color: #18181B with 40% opacity
   const cardBg = 'rgba(24, 24, 27, 0.4)';
 
-  // Projects data
-  const projects: Project[] = [
-    {
-      id: 1,
-      title: 'Crypto Dashboard',
-      category: 'Frontend',
-      description: 'Real-time cryptocurrency tracking dashboard with interactive charts.',
-      technologies: ['React', 'Recharts', 'Tailwind'],
-      link: '#',
-      thumbnail: undefined, // Add image path here or use placeholder
-    },
-    {
-      id: 2,
-      title: 'E-Commerce Platform',
-      category: 'Fullstack',
-      description: 'A complete e-commerce solution with cart, checkout, and admin dashboard.',
-      technologies: ['Next.js', 'PostgreSQL', 'Stripe'],
-      link: '#',
-      thumbnail: undefined, // Add image path here or use placeholder
-    },
-    {
-      id: 3,
-      title: 'AI Chat Interface',
-      category: 'Frontend',
-      description: 'Modern chat interface for LLMs with syntax highlighting and message.',
-      technologies: ['React', 'OpenAI API', 'Tailwind'],
-      link: '#',
-      thumbnail: undefined, // Add image path here or use placeholder
-    },
-    {
-      id: 4,
-      title: 'Task Management App',
-      category: 'Fullstack',
-      description: 'Collaborative task manager with real-time updates and team workspace.',
-      technologies: ['Vue.js', 'Firebase', 'Pinia'],
-      link: '#',
-      thumbnail: undefined, // Add image path here or use placeholder
-    },
-    {
-      id: 5,
-      title: 'Banking Landing Page',
-      category: 'UI Only',
-      description: 'Futuristic banking landing page with complex scroll animations and.',
-      technologies: ['React', 'GSAP', 'CSS Modules'],
-      link: '#',
-      thumbnail: undefined, // Add image path here or use placeholder
-    },
-  ];
+  // Handle card click to navigate to detail page
+  const handleCardClick = (projectId: string) => {
+    router.push(`/project/${projectId}`);
+  };
 
   const filters = ['All', 'Frontend', 'Fullstack', 'UI Only'];
 
@@ -214,6 +163,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
                   backgroundColor: cardBg,
                   borderColor: borderColor,
                 }}
+                onClick={() => handleCardClick(project.id)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = themeColorValue;
                   e.currentTarget.style.transform = 'translateY(-4px)';
@@ -260,33 +210,21 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
                 )}
               </div>
 
-              {/* Project Title with Link Icon */}
+              {/* Project Title */}
               <div className="flex items-center mb-3 pr-20">
                 <h3 className={`text-xl font-bold ${textColor} group-hover:opacity-80 transition-opacity`}>
                   {project.title}
                 </h3>
-                {project.link && (
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ml-2"
-                    style={{ color: themeColorValue }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ExternalLinkIcon />
-                  </a>
-                )}
               </div>
 
               {/* Description */}
               <p className={`${textGrayLightColor} text-sm mb-4 leading-relaxed`}>
-                {project.description}
+                {project.tagline}
               </p>
 
               {/* Technologies */}
-              <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech, idx) => (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {project.technologies.slice(0, 3).map((tech, idx) => (
                   <span
                     key={idx}
                     className="px-3 py-1 rounded-full text-xs font-medium"
@@ -298,6 +236,19 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
                     {tech}
                   </span>
                 ))}
+                {project.technologies.length > 3 && (
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${textGrayColor}`}>
+                    +{project.technologies.length - 3} more
+                  </span>
+                )}
+              </div>
+
+              {/* View Details Link */}
+              <div className="flex items-center justify-end mt-4 pt-4 border-t" style={{ borderColor: borderColor }}>
+                <div className="flex items-center gap-2 text-sm font-medium" style={{ color: themeColorValue }}>
+                  <span>View Details</span>
+                  <ExternalLinkIcon className="w-4 h-4" />
+                </div>
               </div>
               </motion.div>
             ))}

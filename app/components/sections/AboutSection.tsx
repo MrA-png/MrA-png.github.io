@@ -64,11 +64,12 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
 
   // GitHub statistics state
   const [githubStats, setGithubStats] = useState({
-    commits: 'Loading...',
-    pullRequests: 'Loading...',
-    issues: 'Loading...',
-    repos: 'Loading...',
+    commits: null as string | null,
+    pullRequests: null as string | null,
+    issues: null as string | null,
+    repos: null as string | null,
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch GitHub statistics
   useEffect(() => {
@@ -153,6 +154,8 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
           issues: '5+',
           repos: '10+',
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -183,7 +186,6 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
       subLabel: 'Contributed to' 
     },
   ];
-
 
   // Handle navigation to articles page
   const handleArticlesClick = () => {
@@ -450,7 +452,15 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
               <div className="mb-2 sm:mb-3" style={{ color: themeColor }}>
                 {stat.icon}
               </div>
-              <div className={`text-2xl sm:text-3xl font-bold ${textColor} mb-1`}>{stat.value}</div>
+              {stat.value === null ? (
+                <div className="mb-1">
+                  <div 
+                    className={`h-8 sm:h-9 w-20 sm:w-24 rounded shimmer-loading ${isDarkMode ? 'bg-white/15' : 'bg-black/15'}`}
+                  />
+                </div>
+              ) : (
+                <div className={`text-2xl sm:text-3xl font-bold ${textColor} mb-1`}>{stat.value}</div>
+              )}
               <div className={`${textGrayColor} text-xs sm:text-sm`}>
                 {stat.label}
                 {stat.subLabel && (
@@ -467,4 +477,3 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
     </section>
   );
 };
-

@@ -1,27 +1,25 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
-import { BookIcon, ArrowRightIcon } from '../ui/icons';
-
-interface Article {
-  id: number;
-  date: string;
-  readTime: string;
-  title: string;
-  description: string;
-  tags: string[];
-  link?: string;
-}
+import { BookIcon, ArrowRightIcon, ExternalLinkIcon } from '../ui/icons';
+import { articles } from '../../data/articles';
 
 interface ArticlesSectionProps {
   // Optional props for customization
 }
 
 export const ArticlesSection: React.FC<ArticlesSectionProps> = () => {
+  const router = useRouter();
   const { getThemeColor, isDarkMode, themeColor } = useTheme();
   const themeColorValue = getThemeColor();
+
+  // Handle card click to navigate to detail page
+  const handleCardClick = (articleId: string) => {
+    router.push(`/article/${articleId}`);
+  };
   
   // Helper function to convert hex to rgba
   const hexToRgba = (hex: string, alpha: number): string => {
@@ -42,36 +40,8 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = () => {
   // Card background color: #18181B with 40% opacity
   const cardBg = 'rgba(24, 24, 27, 0.4)';
 
-  // Articles data
-  const articles: Article[] = [
-    {
-      id: 1,
-      date: 'Dec 12, 2024',
-      readTime: '5 min read',
-      title: 'The Future of Frontend: Micro-frontends & Module Federation',
-      description: 'Exploring how large scale applications are shifting towards distributed architectures using Webpack Module Federation.',
-      tags: ['Tech', 'Architecture'],
-      link: '#',
-    },
-    {
-      id: 2,
-      date: 'Nov 28, 2024',
-      readTime: '8 min read',
-      title: 'Mastering React Performance Optimization',
-      description: 'A deep dive into useMemo, useCallback, and React Server Components to build lightning fast apps.',
-      tags: ['React', 'Performance'],
-      link: '#',
-    },
-    {
-      id: 3,
-      date: 'Oct 15, 2024',
-      readTime: '6 min read',
-      title: 'Building Resilient APIs with Node.js',
-      description: 'Best practices for error handling, validation, and logging in Node.js backend services.',
-      tags: ['Backend', 'Node.js'],
-      link: '#',
-    },
-  ];
+  // Show only first 3 articles in section
+  const displayedArticles = articles.slice(0, 3);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -154,7 +124,7 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = () => {
           viewport={{ once: true, margin: '-100px' }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {articles.map((article) => (
+          {displayedArticles.map((article) => (
             <motion.div
               key={article.id}
               variants={itemVariants}
@@ -163,6 +133,7 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = () => {
                 backgroundColor: cardBg,
                 borderColor: borderColor,
               }}
+              onClick={() => handleCardClick(article.id)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = themeColorValue;
                 e.currentTarget.style.transform = 'translateY(-4px)';
@@ -204,14 +175,12 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = () => {
               </div>
 
               {/* Read More Link */}
-              <a
-                href={article.link || '#'}
-                className="inline-flex items-center text-sm font-medium hover:opacity-80 transition-opacity"
-                style={{ color: themeColorValue }}
-              >
-                Read More
-                <ArrowRightIcon />
-              </a>
+              <div className="flex items-center justify-end mt-4 pt-4 border-t" style={{ borderColor: borderColor }}>
+                <div className="flex items-center gap-2 text-sm font-medium" style={{ color: themeColorValue }}>
+                  <span>Read Article</span>
+                  <ExternalLinkIcon className="w-4 h-4" />
+                </div>
+              </div>
             </motion.div>
           ))}
         </motion.div>
