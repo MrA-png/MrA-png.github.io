@@ -29,6 +29,11 @@ export const useActiveNav = (sectionIds: string[]) => {
       setActiveSection('articles');
       return;
     }
+    
+    if (pathname === '/projects') {
+      setActiveSection('projects');
+      return;
+    }
 
     // If we're on home page, use scroll-based detection
     if (pathname === '/') {

@@ -26,6 +26,8 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
     subject: '',
     message: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   // Helper function to convert hex to rgba
   const hexToRgba = (hex: string, alpha: number): string => {
@@ -52,12 +54,57 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
       ...prev,
       [name]: value,
     }));
+    // Reset status when user starts typing
+    if (submitStatus !== 'idle') {
+      setSubmitStatus('idle');
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
+    
+    // Validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setSubmitStatus('error');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Create email content
+    const emailSubject = formData.subject.trim() || `Message from ${formData.name}`;
+    const emailBody = `Hello Azhrul,
+
+${formData.message}
+
+---
+From: ${formData.name}
+Email: ${formData.email}
+${formData.subject ? `Subject: ${formData.subject}` : ''}`;
+
+    // Encode email content for mailto link
+    const encodedSubject = encodeURIComponent(emailSubject);
+    const encodedBody = encodeURIComponent(emailBody);
+    const mailtoLink = `mailto:work.azhrul@gmail.com?subject=${encodedSubject}&body=${encodedBody}`;
+
+    // Open email client
+    window.location.href = mailtoLink;
+
+    // Show success message
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitStatus('success');
+      // Reset form after a delay
+      setTimeout(() => {
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+        });
+        setSubmitStatus('idle');
+      }, 3000);
+    }, 500);
   };
 
 
@@ -322,15 +369,28 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
                   />
                 </div>
 
+                {/* Submit Status Message */}
+                {submitStatus === 'error' && (
+                  <div className="p-3 rounded-lg text-sm" style={{ backgroundColor: hexToRgba('#ef4444', 0.1), color: '#ef4444' }}>
+                    Please fill in all required fields (Name, Email, and Message).
+                  </div>
+                )}
+                {submitStatus === 'success' && (
+                  <div className="p-3 rounded-lg text-sm" style={{ backgroundColor: hexToRgba('#10b981', 0.1), color: '#10b981' }}>
+                    Email client opened! Please send the message from your email client.
+                  </div>
+                )}
+
                 {/* Send Message Button */}
                 <button
                   type="submit"
-                  className="w-full px-6 py-3 rounded-lg font-bold text-white flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90"
+                  disabled={isSubmitting}
+                  className="w-full px-6 py-3 rounded-lg font-bold text-white flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: themeColorValue,
                   }}
                 >
-                  Send Message
+                  {isSubmitting ? 'Opening Email Client...' : 'Send Message'}
                   <PaperAirplaneIcon />
                 </button>
               </form>

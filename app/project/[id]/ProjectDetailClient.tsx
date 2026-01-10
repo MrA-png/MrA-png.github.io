@@ -147,44 +147,44 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     };
 
     try {
-      // Parse start date
+      // Parse start date (format: "1 Maret 2024")
       const startParts = startDate.split(' ');
       const startDay = parseInt(startParts[0]);
       const startMonth = bulanMap[startParts[1]];
       const startYear = parseInt(startParts[2]);
 
-      // Parse end date
+      // Parse end date (format: "30 Juni 2024")
       const endParts = endDate.split(' ');
       const endDay = parseInt(endParts[0]);
       const endMonth = bulanMap[endParts[1]];
       const endYear = parseInt(endParts[2]);
 
+      if (startMonth === undefined || endMonth === undefined || isNaN(startYear) || isNaN(endYear) || isNaN(startDay) || isNaN(endDay)) {
+        return '';
+      }
+
+      // Create dates
       const start = new Date(startYear, startMonth, startDay);
       const end = new Date(endYear, endMonth, endDay);
 
-      // Calculate difference in months
+      // Calculate difference in days
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 because we count inclusively
+
+      // Calculate difference in months for comparison
       const yearsDiff = endYear - startYear;
       const monthsDiff = endMonth - startMonth;
-      const daysDiff = endDay - startDay;
-
       let totalMonths = yearsDiff * 12 + monthsDiff;
-      if (daysDiff < 0) {
+      
+      // Adjust months based on days
+      if (endDay < startDay) {
         totalMonths -= 1;
       }
+      totalMonths += 1; // +1 because we count inclusively
 
-      if (totalMonths < 1) {
-        // Calculate days if less than a month
-        const diffTime = Math.abs(end.getTime() - start.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays < 7) {
-          return `${diffDays} ${diffDays === 1 ? 'day' : 'days'}`;
-        } else if (diffDays < 30) {
-          const weeks = Math.floor(diffDays / 7);
-          return `${weeks} ${weeks === 1 ? 'week' : 'weeks'}`;
-        } else {
-          return '1 month';
-        }
+      // Return appropriate format based on duration (same as experiences)
+      if (diffDays < 30) {
+        return `${diffDays} ${diffDays === 1 ? 'day' : 'days'}`;
       } else if (totalMonths === 1) {
         return '1 month';
       } else if (totalMonths < 12) {
@@ -200,7 +200,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
       }
     } catch (error) {
       console.error('Error calculating duration:', error);
-      return 'N/A';
+      return '';
     }
   };
 

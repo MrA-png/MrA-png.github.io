@@ -49,6 +49,12 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
     ? projects 
     : projects.filter(project => project.category === activeFilter);
 
+  // Display only first 6 projects in section
+  const displayedProjects = filteredProjects.slice(0, 6);
+  
+  // Show "View All" button only if total projects (after filter) is more than 6
+  const shouldShowViewAll = filteredProjects.length > 6;
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -153,7 +159,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
             exit="exit"
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {filteredProjects.map((project) => (
+            {displayedProjects.map((project) => (
               <motion.div
                 key={project.id}
                 variants={itemVariants}
@@ -254,6 +260,37 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = () => {
             ))}
           </motion.div>
         </AnimatePresence>
+
+        {/* View All Projects Button */}
+        {shouldShowViewAll && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-12 text-center"
+          >
+            <button
+              onClick={() => router.push('/projects')}
+              className="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200"
+              style={{
+                backgroundColor: 'transparent',
+                color: themeColorValue,
+                border: `2px solid ${themeColorValue}`,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.backgroundColor = hexToRgba(themeColorValue, 0.1);
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              View All Projects
+            </button>
+          </motion.div>
+        )}
       </div>
     </section>
   );

@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
@@ -13,6 +13,8 @@ export default function ArticlesPage() {
   const router = useRouter();
   const { getThemeColor, isDarkMode, themeColor } = useTheme();
   const themeColorValue = getThemeColor();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<string>('All');
 
   // Handle card click to navigate to detail page
   const handleCardClick = (articleId: string) => {
@@ -37,6 +39,36 @@ export default function ArticlesPage() {
   
   // Card background color: #18181B with 40% opacity
   const cardBg = 'rgba(24, 24, 27, 0.4)';
+
+  // Get all unique categories from articles
+  const categories = useMemo(() => {
+    const cats = ['All', ...new Set(articles.map(article => article.category).filter(Boolean))] as string[];
+    return cats;
+  }, []);
+
+  // Filter and search articles
+  const filteredArticles = useMemo(() => {
+    let result = articles;
+
+    // Filter by category
+    if (activeFilter !== 'All') {
+      result = result.filter(article => article.category === activeFilter);
+    }
+
+    // Search by title, description, tags, or content
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(article => {
+        const titleMatch = article.title.toLowerCase().includes(query);
+        const descriptionMatch = article.description.toLowerCase().includes(query);
+        const tagsMatch = article.tags.some(tag => tag.toLowerCase().includes(query));
+        const contentMatch = article.content.toLowerCase().includes(query);
+        return titleMatch || descriptionMatch || tagsMatch || contentMatch;
+      });
+    }
+
+    return result;
+  }, [activeFilter, searchQuery]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -94,18 +126,116 @@ export default function ArticlesPage() {
               />
             </div>
             <p className={`${textGrayColor} text-sm mt-4`}>
-              {articles.length} articles published
+              {filteredArticles.length} {filteredArticles.length === 1 ? 'article' : 'articles'} {searchQuery || activeFilter !== 'All' ? 'found' : 'published'}
             </p>
           </motion.div>
 
-          {/* Articles Grid */}
+          {/* Search Bar */}
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mb-6"
           >
-            {articles.map((article) => (
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search articles by title, description, tags, or content..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-3 pl-12 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2"
+                style={{
+                  backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                  borderColor: searchQuery ? themeColorValue : borderColor,
+                  color: textColor,
+                  focusRingColor: themeColorValue,
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = themeColorValue;
+                  e.currentTarget.style.boxShadow = `0 0 0 2px ${hexToRgba(themeColorValue, 0.2)}`;
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = borderColor;
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              />
+              <svg
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                style={{ color: textGrayColor }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:opacity-80 transition-opacity"
+                  style={{ color: textGrayColor }}
+                  aria-label="Clear search"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Filter Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-wrap gap-3 mb-8"
+          >
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveFilter(category)}
+                className="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
+                style={{
+                  backgroundColor: activeFilter === category 
+                    ? themeColorValue 
+                    : isDarkMode 
+                      ? 'rgba(255, 255, 255, 0.1)' 
+                      : 'rgba(0, 0, 0, 0.1)',
+                  color: activeFilter === category 
+                    ? '#FFFFFF' 
+                    : textGrayLightColor,
+                  border: `1px solid ${activeFilter === category ? themeColorValue : borderColor}`,
+                }}
+                onMouseEnter={(e) => {
+                  if (activeFilter !== category) {
+                    e.currentTarget.style.borderColor = themeColorValue;
+                    e.currentTarget.style.opacity = '0.8';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeFilter !== category) {
+                    e.currentTarget.style.borderColor = borderColor;
+                    e.currentTarget.style.opacity = '1';
+                  }
+                }}
+              >
+                {category}
+              </button>
+            ))}
+          </motion.div>
+
+          {/* Articles Grid */}
+          <AnimatePresence mode="wait">
+            {filteredArticles.length > 0 ? (
+              <motion.div
+                key={`${activeFilter}-${searchQuery}`}
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit={{ opacity: 0 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {filteredArticles.map((article) => (
               <motion.div
                 key={article.id}
                 variants={itemVariants}
@@ -163,8 +293,25 @@ export default function ArticlesPage() {
                   </div>
                 </div>
               </motion.div>
-            ))}
-          </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="no-results"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="text-center py-16"
+              >
+                <p className={`${textGrayColor} text-lg mb-4`}>
+                  No articles found
+                </p>
+                <p className={`${textGrayColor} text-sm`}>
+                  Try adjusting your search or filter criteria
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
       <Footer />
