@@ -67,6 +67,7 @@ export const experiences: ExperienceDetail[] = [
       { label: 'Breach Invaderzone', url: 'https://breach.invaderzone.com' },
       { label: 'Tracker Invaderzone', url: 'https://tracker.invaderzone.com' },
       { label: 'Invaderzone', url: 'https://invaderzone.com' },
+      { label: 'UI Design', url: 'https://www.figma.com/design/jsVS173GYPlwwXfTMB8oz1/Chowder-Invader_Dashboard_2025--Copy-?node-id=2-5&t=3G7jYZ7CELiya4DJ-1' },
     ],
   },
   {
@@ -271,6 +272,55 @@ export const experiences: ExperienceDetail[] = [
     ],
     links: [
       { label: 'Isitasi.com', url: 'https://isitasi.com' },
+    ],
+  },
+  {
+    id: 'frontend-developer-insightops',
+    title: 'Front End Developer',
+    company: 'InsightOps - PT Siber Integrasi Teknologi',
+    period: '18 Oct 2024 - 11 Nov 2024',
+    location: 'Remote, Indonesia',
+    workType: 'Project Based',
+    images: [
+      '/assets/images/experiences/insightops/image-1.png',
+      '/assets/images/experiences/insightops/image-2.png',
+    ],
+    companyInfo: 'PT Siber Integrasi Teknologi is a technology integration company that provides digital solutions and services. InsightOps is one of their projects focused on developing OSINT (Open Source Intelligence) tools and platforms for investigative purposes. The company specializes in creating secure and efficient technology solutions for law enforcement and investigative agencies, combining modern development practices with privacy and security considerations.',
+    projectOverview: 'Worked as a Front End Developer on a project-based contract for InsightOps, an OSINT (Open Source Intelligence) web application under PT Siber Integrasi Teknologi. This project involved developing a web platform designed to help law enforcement agencies search and gather information about individuals for investigative purposes. I worked as part of a 3-person team (2 frontend developers and 1 backend developer) to complete 6 major features and 9 sub-menus, including comprehensive backend API integration. I was responsible for building responsive and user-friendly frontend interfaces that allow investigators to efficiently search, filter, and visualize OSINT data. The platform required careful attention to data presentation, search functionality, and user experience to support effective investigative workflows while maintaining security and privacy standards.',
+    responsibilities: [
+      'Developed responsive frontend interfaces for OSINT web application using modern web technologies',
+      'Completed 6 major features and 9 sub-menus as part of a 3-person development team (2 frontend, 1 backend)',
+      'Implemented search and filtering functionality for investigative data queries',
+      'Created data visualization components to display OSINT search results effectively',
+      'Integrated frontend with backend APIs, ensuring seamless data flow and API connectivity',
+      'Ensured secure and privacy-conscious frontend implementation for law enforcement use',
+      'Collaborated closely with backend developer and other frontend developer to coordinate feature development',
+      'Optimized user experience for investigative workflows and data analysis',
+    ],
+    achievements: [
+      'Successfully completed 6 major features and 9 sub-menus for OSINT investigative platform',
+      'Successfully integrated frontend with backend APIs, ensuring seamless data connectivity',
+      'Delivered production-ready frontend solution within project timeline as part of a 3-person team (2 frontend, 1 backend)',
+      'Ensured secure frontend implementation suitable for law enforcement use',
+    ],
+    keyAchievements: [
+      'Successfully completed 6 major features and 9 sub-menus for OSINT investigative platform',
+      'Delivered complete frontend solution as part of a 3-person development team (2 frontend, 1 backend)',
+      'Implemented effective search and data visualization features for investigative workflows',
+      'Successfully integrated frontend with backend APIs, ensuring seamless data flow and connectivity',
+      'Ensured security and privacy considerations in frontend implementation',
+      'Delivered user-friendly interface supporting law enforcement investigative needs',
+    ],
+    technologies: ['JavaScript', 'Vue.js', 'Nuxt', 'CSS', 'Tailwind CSS', 'Postman', 'RESTful API', 'GIT'],
+    challenges: [
+      {
+        challenge: 'Developing a frontend interface for an OSINT investigative platform that requires balancing usability with security and privacy considerations while handling complex data from multiple sources. The platform needed to efficiently display and search through potentially sensitive investigative data while maintaining a user-friendly experience for law enforcement investigators. Additionally, the interface needed to support complex search queries and data visualization for various types of OSINT information (personal information, social media data, contact information, etc.), requiring effective data presentation and visualization strategies that allow investigators to quickly understand and analyze information from various data sources.',
+        solution: 'Designed a clean and intuitive interface that prioritizes data clarity and search efficiency. Implemented robust search and filtering functionality that allows investigators to quickly narrow down results. Created modular data visualization components that can handle different types of OSINT data, presenting information in a structured and easy-to-analyze format. Implemented clear data hierarchy and organization to help investigators quickly identify relevant information. Used responsive design principles to ensure the interface works effectively across different devices. Designed data cards and tables that present information in a scannable format, making it easy for investigators to process large amounts of data efficiently. Ensured all frontend interactions follow security best practices and maintain data privacy. Collaborated closely with backend teams to ensure secure API integration and proper data handling. Focused on creating an interface that supports investigative workflows while maintaining professional standards suitable for law enforcement use.',
+      },
+    ],
+    links: [
+      { label: 'InsightOps', url: 'https://insightops.xyz/login' },
+      { label: 'UI Design', url: 'https://www.figma.com/design/ktHIapHzgdzNSMATWkPiJh/Mendtel?node-id=0-1&t=AiuSjAZ0GKg9cEE6-1' },
     ],
   },
   {

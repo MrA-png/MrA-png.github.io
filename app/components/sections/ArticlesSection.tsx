@@ -40,8 +40,8 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = () => {
   // Card background color: #18181B with 40% opacity
   const cardBg = 'rgba(24, 24, 27, 0.4)';
 
-  // Show only first 3 articles in section
-  const displayedArticles = articles.slice(0, 3);
+  // Show only first 6 articles in section (3 rows x 2 columns or 2 rows x 3 columns)
+  const displayedArticles = articles.slice(0, 6);
 
   const containerVariants = {
     hidden: { opacity: 0 },
