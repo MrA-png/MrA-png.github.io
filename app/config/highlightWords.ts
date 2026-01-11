@@ -50,7 +50,8 @@ export const customHighlightWords: string[] = [
   'breach.invaderzone.com',
   'tracker.invaderzone.com',
   'invaderzone.com',
-  'reusable frontend components'
+  'reusable frontend components',
+  'doi.pubmedia.co.id'
   // Words will be matched with word boundaries to avoid substring matches
 ];
 

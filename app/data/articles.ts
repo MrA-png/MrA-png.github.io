@@ -12,11 +12,153 @@ export interface ArticleDetail {
   image?: string; // Deprecated: use images array instead
   featuredImage?: string; // Deprecated: use images array instead
   images?: string[]; // Array of images for slider
+  video?: string; // Video URL or path
+  videos?: string[]; // Array of videos
   category?: string;
   externalLink?: string;
 }
 
 export const articles: ArticleDetail[] = [
+  {
+    id: 'automatic-translation-indonesian-sign-language',
+    title: 'Automatic Translation of Indonesian Sign Language Based on Multimodal Technology Recognition',
+    date: 'Jan 15, 2025',
+    readTime: '10 min read',
+    description: 'A web-based multimodal translation system that converts audio, text, and video inputs into Indonesian Sign Language (BISINDO) gestures using speech recognition, NLP, and gesture rendering to support inclusive communication.',
+    tags: ['Research', 'NLP', 'Machine Learning', 'Accessibility', 'BISINDO', 'Multimodal', 'React', 'Flask', 'Supabase'],
+    author: 'Azhrul Azim Ripai',
+    category: 'Tech',
+    images: [
+      '/assets/images/articles/isyara/tampilan-1.png',
+      '/assets/images/articles/isyara/tampilan-2.png'
+    ],
+    video: '/assets/images/articles/isyara/video-FPC.mp4',
+    externalLink: 'https://ieeexplore.ieee.org/document/11161638',
+    content: `# Automatic Translation of Indonesian Sign Language Based on Multimodal Technology Recognition
+
+Multimodal technology integrates inputs such as audio, video, and text to enhance natural language-based communication accessibility for individuals with disabilities. In Indonesia, people with hearing impairments continue to face challenges in accessing information due to limited sign language interpreter availability and the lack of contextual and interactive learning platforms.
+
+This research aims to develop a web-based translation platform that converts Indonesian audio, text, and video into **BISINDO** (Bahasa Isyarat Indonesia) gestures to support inclusive communication.
+
+![Design System](/assets/images/articles/isyara/desain-sistem.png)
+
+## Introduction
+
+Effective communication is a critical component of everyday life, spanning domains such as education, professional engagement, and social interaction. For individuals with hearing loss, accessing auditory information, especially content delivered through spoken language in audio and video formats, remains a significant barrier.
+
+According to the World Health Organization, more than **5%** of the global population or approximately **466 million people** have hearing loss, with projections showing continued growth. In Indonesia, data from the Ministry of Social Empowerment shows that people with disabilities still face systemic barriers in education, health services, and access to information.
+
+To bridge this gap, this research proposes the development of a web-based multimodal translation system that converts audio, video, and textual content into BISINDO gestures. The system uses **Natural Language Processing (NLP)** to interpret textual data and map the generated tokens to corresponding sign language gesture videos through a collection of sign language gesture datasets and synonym tables.
+
+## System Architecture
+
+The proposed system uses a **React-Flask architecture** with the following key components:
+
+### Frontend (React.js)
+
+The web application is developed using **React.js** for building dynamic and responsive user interfaces. Users can choose from several input modes:
+
+- **Video Upload**: Upload local .mp4 files or insert YouTube links
+- **Text Input**: Manual text input field
+- **Voice Input**: Microphone-based voice input
+
+### Backend (Flask)
+
+The backend, built with **Flask**, manages RESTful API requests and routes input to appropriate modules:
+
+- **Speech Recognition**: Uses Google Cloud Speech-to-Text for transcription
+- **Audio Extraction**: Uses **MoviePy** to extract audio from video files
+- **NLP Pipeline**: Applies tokenization, lowercasing, normalization, and stemming using **Sastrawi**
+- **Gesture Mapping**: Matches words to BISINDO gesture videos stored in **Supabase** database
+
+### NLP Architecture
+
+The NLP pipeline consists of four sequential stages:
+
+1. **Recognition/Conversion**: Multimodal inputs (voice, video, or text) are processed. Audio and video inputs are transcribed using automatic speech recognition (ASR).
+2. **Segmentation and Parsing**: The system applies preprocessing tasks including tokenization, lowercasing, normalization, and stemming. This ensures textual data is standardized and simplified.
+3. **Matching**: Each token is compared with entries in the gesture database. If no direct match is found, the system performs a synonym lookup. If still unmatched, a fallback mechanism uses fingerspelling.
+4. **Processing**: Matched gesture videos are compiled and arranged in order based on the original sentence structure.
+
+![NLP Architecture](/assets/images/articles/isyara/Arsitektur-NLP.png)
+
+## Dataset and Storage
+
+The system relies on a curated gesture dataset with a total of **393 entries**:
+
+- **Word-level BISINDO gestures**: 206 clips collected from publicly available BISINDO tutorial videos on YouTube
+- **Alphabet gestures (A-Z)**: 26 clips produced as consistent 3D animations
+- **Composite letter sequences**: 161 clips generated automatically to spell new or unseen words
+
+All video files are stored in **Supabase Storage** under an organized path scheme. The synonym table further extends coverage by linking variant terms to existing gesture videos, enabling flexible vocabulary expansion without duplicating media assets.
+
+## Experimental Results
+
+System testing was conducted using text, audio, and video inputs to ensure reliability and accuracy:
+
+### Speech-to-Text Transcription
+
+From a reference set containing **408 words**, the system successfully transcribed **388 words** correctly, resulting in:
+- **Word-level accuracy**: **95.1%**
+- **Word Error Rate (WER)**: **3.68%**
+- **Character Error Rate (CER)**: **2.06%**
+
+### Text-to-Sign Translation
+
+For new text inputs:
+- **Precision**: 62.96%
+- **Recall**: 100%
+- **F1-score**: **77.27%**
+
+When the same sentences were tested again, the system returned **100%** accuracy across all metrics with significantly faster processing time:
+- **First input**: 71 seconds
+- **Repeated use**: 1 second (demonstrating efficient gesture caching)
+
+### Video-to-Sign Translation
+
+Initial video translation performance:
+- **Uploaded files**: 19.95% gesture accuracy, 14-19 minutes processing time
+- **YouTube links**: 13.84% gesture accuracy, 14-19 minutes processing time
+
+On repeated playback of the same video:
+- **Gesture accuracy**: **100%**
+- **Processing time**: **2-4 minutes** (due to gesture caching)
+
+## Technical Implementation
+
+### Key Technologies
+
+- **Frontend**: React.js for responsive user interfaces
+- **Backend**: Flask for RESTful API management
+- **Database**: Supabase (PostgreSQL) for gesture storage and relational database management
+- **Speech Recognition**: Google Cloud Speech-to-Text API
+- **NLP Processing**: Sastrawi for Indonesian language stemming
+- **Audio Processing**: MoviePy for audio extraction from video files
+- **Storage**: Supabase Storage for gesture video files
+
+### System Features
+
+1. **Multimodal Input Support**: Accepts voice, text, and video inputs
+2. **Real-time Processing**: Fast translation with gesture caching for repeated inputs
+3. **Fallback Mechanism**: Uses fingerspelling for unknown words
+4. **Synonym Handling**: Extends vocabulary coverage through synonym tables
+5. **Context-Aware Translation**: Preserves sentence-level meaning
+
+## Conclusion
+
+This research successfully developed a multimodal translation system capable of converting audio, text, and video inputs into Indonesian Sign Language (BISINDO) gestures. The system demonstrates strong performance:
+
+- **95.1%** speech transcription accuracy
+- **77.27%** F1-score on first-time text inputs
+- **100%** accuracy on repeated tests
+- Significant performance improvement through gesture caching
+
+The platform shows great potential as both a communication aid and an interactive learning platform for individuals interested in acquiring BISINDO skills. By allowing users to input spoken or written Indonesian and observe corresponding gestures, it serves as a practical tool for vocabulary acquisition and self-paced BISINDO learning.
+
+![ISYARA Project Poster](/assets/images/articles/isyara/poster.png)
+
+Future improvements will focus on expanding the gesture dataset, enabling grammar-aware translation, and optimizing mobile accessibility. With further development, the system can contribute significantly to both accessibility for the Deaf community and public sign language literacy, empowering broader societal understanding and communication inclusivity.`,
+  },
   {
     id: 'simfuni-mobile-app-supply-demand-rattan',
     title: 'My Final Project Application — Simfuni (Mobile Application Supply & Demand for Rattan Industry)',

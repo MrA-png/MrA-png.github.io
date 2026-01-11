@@ -29,6 +29,9 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalImageIndex, setModalImageIndex] = useState(0);
   const [imageError, setImageError] = useState(false);
+  const [contentImages, setContentImages] = useState<string[]>([]);
+  const [isContentModalOpen, setIsContentModalOpen] = useState(false);
+  const [contentModalImageIndex, setContentModalImageIndex] = useState(0);
 
   // Find article by ID
   const article = articles.find(art => art.id === articleId);
@@ -42,6 +45,41 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
 
   const hasMultipleImages = allImages.length > 1;
 
+  // Extract all images from content
+  useEffect(() => {
+    if (!article?.content) {
+      setContentImages([]);
+      return;
+    }
+
+    const images: string[] = [];
+    const lines = article.content.split('\n');
+
+    lines.forEach((line) => {
+      // Extract markdown images: ![alt](url)
+      const imageRegex = /!\[([^\]]*)\]\(([^)]+)(?:\s+"([^"]+)")?\)/g;
+      let match;
+      while ((match = imageRegex.exec(line)) !== null) {
+        const url = match[2];
+        if (url && !images.includes(url)) {
+          images.push(url);
+        }
+      }
+
+      // Extract HTML img tags: <img src="url" alt="alt" />
+      const htmlImageRegex = /<img\s+[^>]*src=["']([^"']+)["'][^>]*>/gi;
+      let htmlMatch;
+      while ((htmlMatch = htmlImageRegex.exec(line)) !== null) {
+        const url = htmlMatch[1];
+        if (url && !images.includes(url)) {
+          images.push(url);
+        }
+      }
+    });
+
+    setContentImages(images);
+  }, [article?.content, articleId]);
+
   // Reset image index when article changes
   useEffect(() => {
     setCurrentImageIndex(0);
@@ -49,6 +87,8 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
     setIsPaused(false);
     setIsModalOpen(false);
     setModalImageIndex(0);
+    setIsContentModalOpen(false);
+    setContentModalImageIndex(0);
   }, [articleId]);
 
   // Auto-play slider: change image every 5 seconds
@@ -86,6 +126,28 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isModalOpen, allImages.length]);
 
+  // Keyboard navigation for content modal
+  useEffect(() => {
+    if (!isContentModalOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsContentModalOpen(false);
+      } else if (e.key === 'ArrowLeft') {
+        setContentModalImageIndex((prev) => 
+          prev === 0 ? contentImages.length - 1 : prev - 1
+        );
+      } else if (e.key === 'ArrowRight') {
+        setContentModalImageIndex((prev) => 
+          prev === contentImages.length - 1 ? 0 : prev + 1
+        );
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isContentModalOpen, contentImages.length]);
+
   // Open modal with clicked image
   const handleImageClick = (index: number) => {
     setModalImageIndex(index);
@@ -97,6 +159,20 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setIsPaused(false); // Resume auto-play when modal closes
+  };
+
+  // Handle content image click
+  const handleContentImageClick = (imageUrl: string) => {
+    const index = contentImages.indexOf(imageUrl);
+    if (index !== -1) {
+      setContentModalImageIndex(index);
+      setIsContentModalOpen(true);
+    }
+  };
+
+  // Close content modal
+  const handleCloseContentModal = () => {
+    setIsContentModalOpen(false);
   };
 
   // If article not found, redirect or show error
@@ -483,6 +559,8 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
                   let inCodeBlock = false;
                   let codeBlockContent: string[] = [];
                   let codeBlockLanguage = '';
+                  let inNumberedList = false;
+                  let numberedListItems: string[] = [];
 
                   lines.forEach((line, idx) => {
                     // Handle code blocks
@@ -559,7 +637,7 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
                             src={url}
                             alt={alt || 'Article image'}
                             title={title || alt}
-                            className="w-full rounded-lg border"
+                            className="w-full rounded-lg border cursor-pointer hover:opacity-90 transition-opacity duration-200"
                             style={{
                               borderColor: borderColor,
                               maxHeight: '600px',
@@ -569,6 +647,7 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
                             }}
+                            onClick={() => handleContentImageClick(url)}
                           />
                           {alt && (
                             <p className={`text-center ${textGrayColor} text-sm mt-2 italic`}>
@@ -601,7 +680,7 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
                           <img
                             src={src}
                             alt={alt}
-                            className="w-full rounded-lg border"
+                            className="w-full rounded-lg border cursor-pointer hover:opacity-90 transition-opacity duration-200"
                             style={{
                               borderColor: borderColor,
                               maxHeight: '600px',
@@ -611,6 +690,7 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
                             }}
+                            onClick={() => handleContentImageClick(src)}
                           />
                           {alt && alt !== 'Article image' && (
                             <p className={`text-center ${textGrayColor} text-sm mt-2 italic`}>
@@ -622,20 +702,35 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
                       return;
                     }
 
-                    // Handle list items
+                    // Handle numbered list - start or continue
+                    if (/^\d+\. /.test(line)) {
+                      if (!inNumberedList) {
+                        // Start new numbered list
+                        inNumberedList = true;
+                        numberedListItems = [];
+                      }
+                      numberedListItems.push(line.replace(/^\d+\. /, ''));
+                      return;
+                    } else if (inNumberedList) {
+                      // End of numbered list - render it
+                      elements.push(
+                        <ol key={`numbered-list-${idx}`} className="mb-4 ml-6 list-decimal space-y-2">
+                          {numberedListItems.map((item, itemIdx) => (
+                            <li key={itemIdx} className="mb-2">
+                              {renderMarkdownText(item)}
+                            </li>
+                          ))}
+                        </ol>
+                      );
+                      inNumberedList = false;
+                      numberedListItems = [];
+                    }
+
+                    // Handle list items (unordered)
                     if (line.startsWith('- ') || line.startsWith('* ')) {
                       elements.push(
                         <li key={idx} className="mb-2 ml-6 list-disc">
                           {renderMarkdownText(line.replace(/^[-*] /, ''))}
-                        </li>
-                      );
-                      return;
-                    }
-                    // Handle numbered list
-                    if (/^\d+\. /.test(line)) {
-                      elements.push(
-                        <li key={idx} className="mb-2 ml-6 list-decimal">
-                          {renderMarkdownText(line.replace(/^\d+\. /, ''))}
                         </li>
                       );
                       return;
@@ -654,9 +749,45 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
                     elements.push(<br key={idx} />);
                   });
 
+                  // Close any remaining numbered list
+                  if (inNumberedList && numberedListItems.length > 0) {
+                    elements.push(
+                      <ol key="numbered-list-end" className="mb-4 ml-6 list-decimal space-y-2">
+                        {numberedListItems.map((item, itemIdx) => (
+                          <li key={itemIdx} className="mb-2">
+                            {renderMarkdownText(item)}
+                          </li>
+                        ))}
+                      </ol>
+                    );
+                  }
+
                   return elements;
                 })()}
               </div>
+
+              {/* Video Player - Inside Content */}
+              {article.video && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.15 }}
+                  className="w-full rounded-lg overflow-hidden mt-8 border"
+                  style={{ borderColor: borderColor }}
+                >
+                  <video
+                    src={article.video}
+                    controls
+                    className="w-full h-auto"
+                    style={{
+                      maxHeight: '600px',
+                      objectFit: 'contain',
+                    }}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                </motion.div>
+              )}
             </div>
           </motion.div>
 
@@ -781,6 +912,125 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
                     }}
                   >
                     {modalImageIndex + 1} / {allImages.length}
+                  </div>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Content Images Modal Preview */}
+      <AnimatePresence>
+        {isContentModalOpen && contentImages.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            }}
+            onClick={handleCloseContentModal}
+          >
+            {/* Close Button */}
+            <button
+              onClick={handleCloseContentModal}
+              className="absolute top-4 right-4 z-10 p-2 rounded-full transition-all duration-200 hover:scale-110"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#FFFFFF',
+              }}
+              aria-label="Close modal"
+            >
+              <XIcon className="w-6 h-6" />
+            </button>
+
+            {/* Image Container */}
+            <div 
+              className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <motion.img
+                key={contentModalImageIndex}
+                src={contentImages[contentModalImageIndex]}
+                alt={`Content image ${contentModalImageIndex + 1}`}
+                className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+              />
+
+              {/* Navigation Buttons */}
+              {contentImages.length > 1 && (
+                <>
+                  {/* Previous Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setContentModalImageIndex((prev) => 
+                        prev === 0 ? contentImages.length - 1 : prev - 1
+                      );
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full transition-all duration-200 hover:scale-110"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      color: '#FFFFFF',
+                    }}
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeftIcon className="w-8 h-8" />
+                  </button>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setContentModalImageIndex((prev) => 
+                        prev === contentImages.length - 1 ? 0 : prev + 1
+                      );
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full transition-all duration-200 hover:scale-110"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      color: '#FFFFFF',
+                    }}
+                    aria-label="Next image"
+                  >
+                    <ChevronRightIcon className="w-8 h-8" />
+                  </button>
+
+                  {/* Dots Indicator */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+                    {contentImages.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setContentModalImageIndex(idx);
+                        }}
+                        className="w-2 h-2 rounded-full transition-all duration-200"
+                        style={{
+                          backgroundColor: idx === contentModalImageIndex 
+                            ? '#FFFFFF' 
+                            : 'rgba(255, 255, 255, 0.5)',
+                          width: idx === contentModalImageIndex ? '24px' : '8px',
+                        }}
+                        aria-label={`Go to image ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Image Counter */}
+                  <div 
+                    className="absolute top-4 left-1/2 -translate-x-1/2 z-10 px-4 py-2 rounded-full text-sm font-medium"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      color: '#FFFFFF',
+                    }}
+                  >
+                    {contentModalImageIndex + 1} / {contentImages.length}
                   </div>
                 </>
               )}

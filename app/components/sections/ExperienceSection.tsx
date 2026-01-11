@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '../../contexts/ThemeContext';
 import { experiences } from '../../data/experiences';
@@ -43,6 +43,82 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
   const handleCardClick = (experienceId: string) => {
     router.push(`/experience/${experienceId}`);
   };
+
+  // State for collapse/expand company cards (default all open)
+  const [expandedCompanies, setExpandedCompanies] = useState<{ [key: string]: boolean }>(() => {
+    const initial: { [key: string]: boolean } = {};
+    // Initialize all companies as expanded (true) by extracting company names from experiences
+    experiences.forEach((experience) => {
+      let companyName = experience.company;
+      if (experience.company.includes(' - ')) {
+        const parts = experience.company.split(' - ');
+        companyName = parts[parts.length - 1].trim();
+      }
+      if (!initial[companyName]) {
+        initial[companyName] = true; // Default: all expanded
+      }
+    });
+    return initial;
+  });
+
+  // Toggle company collapse/expand
+  const toggleCompany = (companyName: string) => {
+    setExpandedCompanies((prev) => ({
+      ...prev,
+      [companyName]: !prev[companyName],
+    }));
+  };
+
+  // Group experiences by company
+  const groupedExperiences = React.useMemo(() => {
+    const groups: { [key: string]: typeof experiences } = {};
+    
+    experiences.forEach((experience) => {
+      // Extract company name (after " - " if exists, otherwise use full company name)
+      // Format: "Project Name - Company Name" or just "Company Name"
+      let companyName = experience.company;
+      if (experience.company.includes(' - ')) {
+        const parts = experience.company.split(' - ');
+        // Take the last part as company name (handles cases like "A - B - C")
+        companyName = parts[parts.length - 1].trim();
+      }
+      
+      if (!groups[companyName]) {
+        groups[companyName] = [];
+      }
+      groups[companyName].push(experience);
+    });
+
+    // Sort experiences within each group: Present first, then by date
+    Object.keys(groups).forEach((companyName) => {
+      groups[companyName].sort((a, b) => {
+        const aIsPresent = a.period.toLowerCase().includes('present');
+        const bIsPresent = b.period.toLowerCase().includes('present');
+        
+        // If one is Present and the other is not, Present comes first
+        if (aIsPresent && !bIsPresent) return -1;
+        if (!aIsPresent && bIsPresent) return 1;
+        
+        // If both are Present or both are not, keep original order
+        return 0;
+      });
+    });
+
+    // Sort groups: groups with Present experiences first
+    const sortedGroups = Object.entries(groups).sort((a, b) => {
+      const aHasPresent = a[1].some(exp => exp.period.toLowerCase().includes('present'));
+      const bHasPresent = b[1].some(exp => exp.period.toLowerCase().includes('present'));
+      
+      // If one group has Present and the other doesn't, Present group comes first
+      if (aHasPresent && !bHasPresent) return -1;
+      if (!aHasPresent && bHasPresent) return 1;
+      
+      // If both have Present or both don't, keep original order
+      return 0;
+    });
+
+    return sortedGroups;
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -95,11 +171,11 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
             style={{ backgroundColor: timelineColor }}
           />
 
-          {/* Experience Items */}
+          {/* Experience Items Grouped by Company */}
           <div className="space-y-8 sm:space-y-12">
-            {experiences.map((experience) => (
+            {groupedExperiences.map(([companyName, companyExperiences], groupIndex) => (
               <motion.div
-                key={experience.id}
+                key={companyName}
                 variants={itemVariants}
                 className="relative pl-12 sm:pl-16 md:pl-20"
               >
@@ -112,63 +188,27 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
                   }}
                 />
 
-                {/* Experience Card */}
+                {/* Company Card (Big Card) */}
                 <div
-                  className="rounded-lg p-4 sm:p-6 border cursor-pointer transition-all duration-300"
+                  className="rounded-lg p-6 sm:p-8 border transition-all duration-300"
                   style={{
                     backgroundColor: cardBg,
                     borderColor: borderColor,
                   }}
-                  onClick={() => handleCardClick(experience.id)}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = themeColorValue;
-                    e.currentTarget.style.transform = 'translateX(8px)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = borderColor;
-                    e.currentTarget.style.transform = 'translateX(0)';
                   }}
                 >
-                  {/* Header: Title/Company on left, Period/Location on right */}
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-3">
-                    {/* Left: Title and Company */}
-                    <div className="flex-1">
-                      <h3 className={`text-lg sm:text-xl md:text-2xl font-bold ${textColor} mb-2`}>
-                        {experience.title}
+                  {/* Company Header */}
+                  <div className="flex items-center justify-between mb-6 pb-4 border-b" style={{ borderColor: borderColor }}>
+                    <div className="flex items-center gap-3">
+                      <h3 className={`text-xl sm:text-2xl md:text-3xl font-bold ${textColor}`}>
+                        {companyName}
                       </h3>
-                      <p className={`text-base sm:text-lg ${textGrayLightColor}`}>
-                        {experience.company}
-                      </p>
-                    </div>
-
-                    {/* Right: Period on top, Location/WorkType below */}
-                    <div className="flex flex-col items-start sm:items-end text-right">
-                      <span className={`${textGrayColor} text-sm font-medium mb-1`}>
-                        {experience.period}
-                      </span>
-                      <div className={`flex flex-wrap items-center gap-2 ${textGrayColor} text-sm`}>
-                        <span>{experience.location}</span>
-                        <span>•</span>
-                        <span>{experience.workType}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Achievements */}
-                  <ul className="space-y-2 mb-4">
-                    {experience.achievements.map((achievement, idx) => (
-                      <li key={idx} className={`flex items-start ${textGrayLightColor} text-sm md:text-base`}>
-                        <span className="mr-2" style={{ color: timelineColor }}>•</span>
-                        <span>{highlightBold(achievement, themeColorValue)}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Technologies */}
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {experience.technologies.map((tech, idx) => (
                       <span
-                        key={idx}
                         className="px-3 py-1 rounded-full text-xs font-medium"
                         style={{
                           backgroundColor: hexToRgba(timelineColor, 0.2),
@@ -176,18 +216,150 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
                           border: `1px solid ${hexToRgba(timelineColor, 0.3)}`,
                         }}
                       >
-                        {tech}
+                        {companyExperiences.length} {companyExperiences.length === 1 ? 'Experience' : 'Experiences'}
                       </span>
-                    ))}
+                    </div>
+                    {/* Collapse/Expand Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCompany(companyName);
+                      }}
+                      className="p-2 rounded-full transition-all duration-200 hover:scale-110"
+                      style={{
+                        backgroundColor: hexToRgba(timelineColor, 0.1),
+                        color: timelineColor,
+                      }}
+                      aria-label={expandedCompanies[companyName] ? 'Collapse' : 'Expand'}
+                    >
+                      <motion.svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        animate={{ rotate: expandedCompanies[companyName] ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </motion.svg>
+                    </button>
                   </div>
 
-                  {/* View Details Link */}
-                  <div className="flex items-center justify-end mt-4 pt-4 border-t" style={{ borderColor: borderColor }}>
-                    <div className="flex items-center gap-2 text-sm font-medium" style={{ color: themeColorValue }}>
-                      <span>View Details</span>
-                      <ExternalLinkIcon className="w-4 h-4" />
-                    </div>
-                  </div>
+                  {/* Experience Cards Inside Company Card */}
+                  <AnimatePresence initial={false}>
+                    {expandedCompanies[companyName] && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        className="space-y-4 sm:space-y-6 overflow-hidden"
+                      >
+                    {companyExperiences.map((experience, expIndex) => (
+                      <div
+                        key={experience.id}
+                        className="rounded-lg p-4 sm:p-5 border cursor-pointer transition-all duration-300"
+                        style={{
+                          backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.5)',
+                          borderColor: hexToRgba(borderColor, 0.5),
+                        }}
+                        onClick={() => handleCardClick(experience.id)}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = themeColorValue;
+                          e.currentTarget.style.transform = 'translateX(4px)';
+                          e.currentTarget.style.backgroundColor = isDarkMode 
+                            ? 'rgba(0, 0, 0, 0.5)' 
+                            : 'rgba(255, 255, 255, 0.7)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = hexToRgba(borderColor, 0.5);
+                          e.currentTarget.style.transform = 'translateX(0)';
+                          e.currentTarget.style.backgroundColor = isDarkMode 
+                            ? 'rgba(0, 0, 0, 0.3)' 
+                            : 'rgba(255, 255, 255, 0.5)';
+                        }}
+                      >
+                        {/* Header: Title/Company on left, Period/Location on right */}
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 gap-3">
+                          {/* Left: Title and Company */}
+                          <div className="flex-1">
+                            <h4 className={`text-base sm:text-lg md:text-xl font-bold ${textColor} mb-1`}>
+                              {experience.title}
+                            </h4>
+                            <p className={`text-sm sm:text-base ${textGrayLightColor}`}>
+                              {experience.company}
+                            </p>
+                          </div>
+
+                          {/* Right: Period on top, Location/WorkType below */}
+                          <div className="flex flex-col items-start sm:items-end text-right">
+                            <span className={`${textGrayColor} text-xs sm:text-sm font-medium mb-1`}>
+                              {experience.period}
+                            </span>
+                            <div className={`flex flex-wrap items-center gap-2 ${textGrayColor} text-xs sm:text-sm`}>
+                              <span>{experience.location}</span>
+                              <span>•</span>
+                              <span>{experience.workType}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Achievements */}
+                        <ul className="space-y-1.5 mb-3">
+                          {experience.achievements.slice(0, 2).map((achievement, idx) => (
+                            <li key={idx} className={`flex items-start ${textGrayLightColor} text-xs sm:text-sm`}>
+                              <span className="mr-2" style={{ color: timelineColor }}>•</span>
+                              <span className="line-clamp-2">{highlightBold(achievement, themeColorValue)}</span>
+                            </li>
+                          ))}
+                          {experience.achievements.length > 2 && (
+                            <li className={`${textGrayColor} text-xs sm:text-sm italic`}>
+                              +{experience.achievements.length - 2} more achievements
+                            </li>
+                          )}
+                        </ul>
+
+                        {/* Technologies */}
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                          {experience.technologies.slice(0, 5).map((tech, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-0.5 rounded-full text-xs font-medium"
+                              style={{
+                                backgroundColor: hexToRgba(timelineColor, 0.15),
+                                color: timelineColor,
+                                border: `1px solid ${hexToRgba(timelineColor, 0.25)}`,
+                              }}
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                          {experience.technologies.length > 5 && (
+                            <span
+                              className="px-2 py-0.5 rounded-full text-xs font-medium"
+                              style={{
+                                backgroundColor: hexToRgba(timelineColor, 0.15),
+                                color: timelineColor,
+                                border: `1px solid ${hexToRgba(timelineColor, 0.25)}`,
+                              }}
+                            >
+                              +{experience.technologies.length - 5}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* View Details Link */}
+                        <div className="flex items-center justify-end mt-3 pt-3 border-t" style={{ borderColor: hexToRgba(borderColor, 0.3) }}>
+                          <div className="flex items-center gap-2 text-xs sm:text-sm font-medium" style={{ color: themeColorValue }}>
+                            <span>View Details</span>
+                            <ExternalLinkIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             ))}

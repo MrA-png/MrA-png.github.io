@@ -150,6 +150,62 @@ export const experiences: ExperienceDetail[] = [
     ],
   },
   {
+    id: 'fullstack-developer-doi-pubmedia',
+    title: 'Fullstack Developer',
+    company: 'DOI Pubmedia - PT Pubmedia Digital Sains',
+    period: 'Jul 2025 - Aug 2025',
+    location: 'Jogyakarta, Indonesia',
+    workType: 'Contract',
+    images: [
+      '/assets/images/projects/doi/image-1.png',
+      '/assets/images/projects/doi/image-2.png'
+    ],
+    companyInfo: 'PT Pubmedia Digital Sains is a digital company focused on developing innovative solutions for academic and research communities. DOI Pubmedia (https://doi.pubmedia.co.id) is one of their platforms that provides Digital Object Identifier (DOI) registration services, enabling institutions to join Crossref membership through Pubmedia. The platform helps publishing companies, universities, societies, foundations, and other organizations register DOI for their journals, conferences, and books with cost-effective pricing (IDR 750,000 per year membership fee, no deposit required) and comprehensive support services.',
+    projectOverview: 'Worked as a Fullstack Developer on a contract basis for DOI Pubmedia, a DOI registration platform under PT Pubmedia Digital Sains. My primary responsibilities included developing comprehensive DOI registration platform with Crossref API integration, building membership and subscription management system, integrating Duitku payment gateway for secure online payment processing, implementing automatic invoicing system that generates and sends invoices when membership due dates are reached, and creating article-level payment processing system for articles within registered journals. I successfully deployed the platform to production with live domain (doi.pubmedia.co.id), enabling 137+ active members from various institution types to register DOI for their journals, conferences, and books.',
+    responsibilities: [
+      'Developed comprehensive DOI registration platform with Crossref API integration',
+      'Built membership and subscription management system supporting multiple institution types (publishing companies, universities, societies, foundations)',
+      'Integrated Duitku payment gateway for secure online payment processing with multiple payment methods',
+      'Implemented automatic invoicing system with scheduled tasks that monitor membership expiration dates and automatically generate invoices when due dates are reached',
+      'Created article-level payment processing system for articles within registered journals (USD $1 + Rp1,000 per article)',
+      'Developed payment calculation system handling membership fees (IDR 750,000/year) and article fees',
+      'Built automated membership renewal tracking and expiration monitoring system',
+      'Created payment reconciliation system that automatically updates membership status and article registration status upon successful payment',
+      'Developed comprehensive admin dashboard for member management, payment tracking, and platform oversight',
+      'Built user portal for institutions to manage accounts, register DOIs, track payments, and pay for articles',
+      'Successfully deployed platform to production with live domain (doi.pubmedia.co.id)',
+    ],
+    achievements: [
+      'Successfully developed and deployed DOI Pubmedia platform enabling 137+ active members to register DOI',
+      'Integrated Duitku payment gateway with comprehensive payment processing system',
+      'Implemented automatic invoicing system that generates and sends invoices when membership due dates are reached',
+      'Created article-level payment processing system for articles within registered journals',
+      'Developed payment reconciliation system that automatically updates membership and article status',
+      'Built comprehensive admin dashboard and user portal with multiple features',
+      'Successfully deployed platform to production with live domain',
+    ],
+    keyAchievements: [
+      'Developed comprehensive DOI registration platform with Crossref API integration',
+      'Integrated Duitku payment gateway for secure online payment processing',
+      'Implemented automatic invoicing system for membership renewals',
+      'Created article-level payment processing system for registered journals',
+      'Built payment reconciliation system with automatic status updates',
+      'Successfully deployed platform enabling 137+ institutions to register DOI',
+      'Streamlined payment workflow reducing manual invoicing and payment tracking efforts',
+    ],
+    technologies: ['Laravel', 'PHP', 'MySQL', 'JavaScript', 'HTML', 'CSS', 'Bootstrap', 'RESTful API', 'Duitku Payment Gateway', 'Crossref API', 'GIT'],
+    challenges: [
+      {
+        challenge: 'Integrating Duitku payment gateway for comprehensive payment processing system supporting multiple payment scenarios: annual membership subscription fees (IDR 750,000 per year), automatic invoicing when membership due dates are reached, and article-level payment processing for articles within registered journals (USD $1 + Rp1,000 per article). The system needed to handle secure payment processing with proper transaction tracking, automatic invoice generation and email notifications when membership expiration dates are reached, article payment management for registered journals, payment reconciliation that automatically updates membership and article registration status, and comprehensive error handling for failed transactions. Additionally, the platform required seamless integration between payment gateway, membership management, DOI registration workflow, and article management systems.',
+        solution: 'Integrated Duitku payment gateway API with comprehensive payment processing system supporting multiple payment methods. Implemented automatic invoicing system with scheduled tasks that monitor membership expiration dates daily, automatically generating invoices when due dates are reached and sending email notifications to members with payment links. Built article payment processing system that tracks articles within registered journals, calculates fees per article (USD $1 + Rp1,000), and processes payments through Duitku integration. Created payment reconciliation system that automatically updates membership status and article registration status upon successful payment. Implemented comprehensive transaction tracking with payment status monitoring, receipt generation, and automated confirmation emails. Developed payment calculation logic handling both membership fees and article-level fees with proper currency conversion. Built proper error handling and retry mechanisms for failed transactions, ensuring reliable payment processing. Created seamless integration between Duitku payment gateway, membership management system, DOI registration workflow, and article management, ensuring all systems work together cohesively.',
+      },
+    ],
+    links: [
+      { label: 'DOI Pubmedia', url: 'https://doi.pubmedia.co.id' },
+      { label: 'UI Design', url: 'https://www.figma.com/design/4bfUSqYdixXb97Fdng3bA5/DOI-Pubmed?node-id=2-6&t=LYGys23eb1g7tGJ6-1' },
+    ],
+  },
+  {
     id: 'fullstack-developer-arsipjurnal',
     title: 'Fullstack Developer',
     company: 'arsipjurnal.com - PT Pubmedia Digital Sains',
@@ -272,6 +328,7 @@ export const experiences: ExperienceDetail[] = [
     ],
     links: [
       { label: 'Isitasi.com', url: 'https://isitasi.com' },
+      { label: 'UI Design', url: 'https://www.figma.com/design/DxOj23V8GjVdjJqqXQ9BSm/Isitasi?node-id=42-1021&t=DKQvgHoeSilyKwtD-1' },
     ],
   },
   {
