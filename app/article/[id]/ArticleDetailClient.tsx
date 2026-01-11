@@ -224,7 +224,7 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
     const allMatches: Array<{ type: 'bold' | 'code'; start: number; end: number; content: string }> = [];
 
     // Find all code matches (process first to avoid conflicts)
-    let match;
+    let match: RegExpExecArray | null;
     const codeMatches: number[] = [];
     while ((match = codeRegex.exec(text)) !== null) {
       allMatches.push({
@@ -241,7 +241,7 @@ export function ArticleDetailClient({ articleId }: ArticleDetailClientProps) {
 
     // Find all bold matches (skip if inside code block)
     while ((match = boldRegex.exec(text)) !== null) {
-      const isInsideCode = codeMatches.some(pos => pos >= match.index && pos < match.index + match[0].length);
+      const isInsideCode = codeMatches.some(pos => pos >= match!.index && pos < match!.index + match![0].length);
       if (!isInsideCode) {
         allMatches.push({
           type: 'bold',
