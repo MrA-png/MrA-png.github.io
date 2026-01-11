@@ -387,7 +387,26 @@ export const AboutSection: React.FC<AboutSectionProps> = () => {
           transition={{ duration: 0.6 }}
           className="mb-8 sm:mb-10"
         >
-          <h3 className={`${textGrayColor} text-xs sm:text-sm mb-3 sm:mb-4`}>Contributions in the last year</h3>
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h3 className={`${textGrayColor} text-xs sm:text-sm`}>
+              Contributions in the last year
+            </h3>
+            <a
+              href="https://github.com/mra-png"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`text-xs sm:text-sm font-medium transition-colors hover:opacity-80 underline`}
+              style={{ color: themeColor }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '0.8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '1';
+              }}
+            >
+              View on GitHub
+            </a>
+          </div>
           
           {/* GitHub Calendar */}
           <div 
