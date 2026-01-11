@@ -37,8 +37,8 @@ export default function ArticlesPage() {
   
   const borderColor = hexToRgba(themeColorValue, 0.3);
   
-  // Card background color: #18181B with 40% opacity
-  const cardBg = 'rgba(24, 24, 27, 0.4)';
+  // Card background color: glass effect for light mode, dark for dark mode
+  const cardBg = isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(255, 255, 255, 0.3)';
 
   // Get all unique categories from articles
   const categories = useMemo(() => {
@@ -148,7 +148,6 @@ export default function ArticlesPage() {
                   backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
                   borderColor: searchQuery ? themeColorValue : borderColor,
                   color: textColor,
-                  focusRingColor: themeColorValue,
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = themeColorValue;

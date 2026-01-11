@@ -45,8 +45,8 @@ export const ContactSection: React.FC<ContactSectionProps> = () => {
   
   const borderColor = hexToRgba(themeColorValue, 0.3);
   
-  // Card background color: #18181B with 40% opacity
-  const cardBg = 'rgba(24, 24, 27, 0.4)';
+  // Card background color: glass effect for light mode, dark for dark mode
+  const cardBg = isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(255, 255, 255, 0.3)';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

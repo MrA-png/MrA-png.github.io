@@ -36,8 +36,8 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
   const timelineColor = themeColorValue;
   const borderColor = hexToRgba(themeColorValue, 0.3);
   
-  // Card background color: #18181B with 40% opacity
-  const cardBg = 'rgba(24, 24, 27, 0.4)';
+  // Card background color: glass effect for light mode, dark for dark mode
+  const cardBg = isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(255, 255, 255, 0.3)';
 
   // Handle card click to navigate to detail page
   const handleCardClick = (experienceId: string) => {
@@ -260,7 +260,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
                         key={experience.id}
                         className="rounded-lg p-4 sm:p-5 border cursor-pointer transition-all duration-300"
                         style={{
-                          backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.5)',
+                          backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)',
                           borderColor: hexToRgba(borderColor, 0.5),
                         }}
                         onClick={() => handleCardClick(experience.id)}
@@ -269,14 +269,14 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = () => {
                           e.currentTarget.style.transform = 'translateX(4px)';
                           e.currentTarget.style.backgroundColor = isDarkMode 
                             ? 'rgba(0, 0, 0, 0.5)' 
-                            : 'rgba(255, 255, 255, 0.7)';
+                            : 'rgba(255, 255, 255, 0.5)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.borderColor = hexToRgba(borderColor, 0.5);
                           e.currentTarget.style.transform = 'translateX(0)';
                           e.currentTarget.style.backgroundColor = isDarkMode 
                             ? 'rgba(0, 0, 0, 0.3)' 
-                            : 'rgba(255, 255, 255, 0.5)';
+                            : 'rgba(255, 255, 255, 0.3)';
                         }}
                       >
                         {/* Header: Title/Company on left, Period/Location on right */}
