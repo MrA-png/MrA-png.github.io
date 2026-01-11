@@ -227,14 +227,14 @@ export default function ArticlesPage() {
           {/* Articles Grid */}
           <AnimatePresence mode="wait">
             {filteredArticles.length > 0 ? (
-              <motion.div
+          <motion.div
                 key={`${activeFilter}-${searchQuery}`}
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
                 exit={{ opacity: 0 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
                 {filteredArticles.map((article) => (
               <motion.div
                 key={article.id}
@@ -293,8 +293,8 @@ export default function ArticlesPage() {
                   </div>
                 </div>
               </motion.div>
-                ))}
-              </motion.div>
+            ))}
+          </motion.div>
             ) : (
               <motion.div
                 key="no-results"
