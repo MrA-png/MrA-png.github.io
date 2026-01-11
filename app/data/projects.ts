@@ -43,7 +43,59 @@ export interface ProjectDetail {
 }
 
 export const projects: ProjectDetail[] = [
-
+  {
+    id: 'web-k3-dashboard',
+    title: 'WEB K3 - Workplace Safety & Health Monitoring Dashboard',
+    tagline: 'Dashboard system to determine lighting standards and work climate standards for each room, simplifying technical evaluation processes and data-driven decision making to create safer and standard-compliant work environments.',
+    role: 'Fullstack Developer',
+    startDate: '1 February 2025',
+    endDate: '30 June 2025',
+    background: 'WEB K3 is a web-based dashboard system developed as a final project (thesis) for a student, focusing on monitoring workplace safety and health (K3 - Occupational Safety and Health) conditions. The system aims to determine lighting standards and work climate standards for each room, supporting technical evaluation processes and data-driven decision making to create safer and standard-compliant work environments. The platform simplifies the process of monitoring environmental work conditions, enabling easier technical evaluation and decision-making based on data, ultimately creating work spaces that are safer and meet established standards.',
+    problem: 'Workplace safety and health monitoring requires systematic evaluation of environmental conditions including lighting standards and work climate (temperature, humidity, air quality) for each room. Traditional monitoring methods are often manual, time-consuming, and lack real-time data visualization. Organizations need a comprehensive dashboard system that can monitor, evaluate, and determine whether each room meets established lighting and climate work standards. The system must provide data-driven insights to support technical evaluation and decision-making processes, ensuring work environments comply with safety and health standards. Additionally, the platform needs to simplify the complex process of technical evaluation and enable quick identification of rooms that do not meet standards.',
+    challenges: [
+      {
+        challenge: 'Developing a comprehensive dashboard system that monitors and evaluates lighting standards and work climate (temperature, humidity, air quality) for multiple rooms. The system needed to collect real-time data from various sensors, process and analyze the data to determine compliance with established standards, and present the information in an intuitive dashboard format. Additionally, the system required implementing algorithms to evaluate whether each room meets lighting and climate work standards, generate reports, and provide data-driven recommendations for improvements.',
+        solution: 'Built a comprehensive dashboard system with real-time data monitoring capabilities for multiple rooms. Implemented data collection and processing modules that aggregate sensor data for lighting, temperature, humidity, and air quality. Created evaluation algorithms that compare collected data against established K3 standards for lighting and work climate, automatically determining compliance status for each room. Developed intuitive dashboard interface with visual indicators, charts, and graphs to present data clearly. Implemented reporting system that generates comprehensive reports on room compliance status and provides recommendations for improvements. Used modern web technologies to ensure responsive design and real-time data updates, enabling quick identification of rooms that do not meet standards.',
+      },
+    ],
+    contributions: [
+      'Developed comprehensive dashboard system for monitoring workplace safety and health (K3) conditions',
+      'Implemented real-time data monitoring for lighting standards and work climate (temperature, humidity, air quality)',
+      'Built evaluation algorithms to determine compliance with established K3 standards for each room',
+      'Created intuitive dashboard interface with visual indicators and data visualization',
+      'Implemented reporting system with compliance status and improvement recommendations',
+      'Designed and developed responsive web interface ensuring optimal experience across devices',
+      'Built data processing and analysis modules for sensor data aggregation',
+      'Developed room-based monitoring system supporting multiple rooms simultaneously',
+      'Implemented data-driven decision support system for technical evaluation',
+      'Created system that simplifies complex technical evaluation processes',
+    ],
+    technologies: ['Laravel', 'PHP', 'MySQL', 'JavaScript', 'HTML', 'CSS', 'Bootstrap', 'RESTful API', 'Chart.js', 'GIT'],
+    tools: ['GIT', 'Composer', 'Postman', 'PostgreSQL'],
+    services: ['Web Development', 'Backend Development', 'Supabase', 'Data Visualization', 'K3 Monitoring System'],
+    projectType: 'Client',
+    client: 'Student (Final Project Thesis)',
+    result: 'Successfully developed and deployed WEB K3 dashboard system that monitors and evaluates lighting standards and work climate conditions for each room. The system simplifies technical evaluation processes and enables data-driven decision making, creating safer and standard-compliant work environments. The dashboard provides real-time monitoring, compliance evaluation, and comprehensive reporting capabilities, supporting organizations in maintaining workplace safety and health standards.',
+    impact: [
+      'Enabled systematic monitoring of lighting standards and work climate for multiple rooms',
+      'Simplified technical evaluation processes through automated compliance checking',
+      'Provided data-driven insights for decision-making on workplace safety improvements',
+      'Created safer work environments by ensuring compliance with K3 standards',
+      'Streamlined monitoring and evaluation of environmental work conditions',
+      'Supported organizations in maintaining workplace safety and health standards',
+    ],
+    links: [
+      { label: 'UI Design', url: 'https://www.figma.com/design/jgV97F1nKfiMesYiUcXBkV/pa_dimas?node-id=0-1&t=OZTOTrufZnUNyVVq-1' },
+      { label: 'Repository', url: 'https://github.com/MrA-png/web-k3' },
+    ],
+    category: 'Fullstack',
+    images: [
+      '/assets/images/projects/web-k3/image-1.png',
+      '/assets/images/projects/web-k3/image-2.png',
+      '/assets/images/projects/web-k3/image-3.png',
+      '/assets/images/projects/web-k3/image-4.png',
+    ],
+  },
   {
     id: 'isyara-multimodal-sign-language-translation',
     title: 'ISYARA - Multimodal Sign Language Translation System',

@@ -20,6 +20,7 @@ export const Footer: React.FC = () => {
   const textColor = isDarkMode ? 'text-white' : 'text-black';
   const textGrayColor = isDarkMode ? 'text-gray-400' : 'text-gray-600';
   const borderColor = isDarkMode ? 'border-gray-800' : 'border-gray-200';
+  const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
 
   const quickLinks = [
     { name: 'Home', id: 'home' },
@@ -80,7 +81,7 @@ export const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className={`bg-black ${textColor} py-12`}>
+    <footer className={`${bgColor} ${textColor} py-12 transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Top Border */}
         <div className={`border-t ${borderColor} mb-8`} />
