@@ -329,8 +329,8 @@ export const projects: ProjectDetail[] = [
     ],
     category: 'Frontend',
     images: [
-      '/assets/images/experiences/insightops/image-1.png',
-      '/assets/images/experiences/insightops/image-2.png',
+      '/assets/images/experiences/insightOps/image-1.png',
+      '/assets/images/experiences/insightOps/image-2.png',
     ],
   },
   {
